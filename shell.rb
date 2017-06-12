@@ -44,12 +44,12 @@ end
 CMDS = {
   "cd"   => -> (dir = __dir__) { Dir.chdir dir },
   "date" => -> { Time.now.strftime('%d/%m/%Y') },
+  "exit" => -> { $> << "bye (￣▽￣)ノ"; exit 0 },
   "cls"  => -> { system 'cls' },
   "cmds" => -> { CMDS.keys*?| },
   "path" => -> { ENV['Path'] },
   "ls"   => -> { Dir["./*"] },
-  "pwd"  => -> { Dir.pwd },
-  "exit" => -> { exit 0 }
+  "pwd"  => -> { Dir.pwd }
 }
 
 case ARGV[0]
