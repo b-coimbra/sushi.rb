@@ -15,9 +15,15 @@ def main
       if i =~ /cd(?<dir>(\s(.*)+))/im
         dir = $~[:dir].to_s.strip
 
-        CMDS["cd"]::(dir)
+        if !test(?e, dir)
+          $> << "No directory named #{dir}\n"
 
-        $Prompt = "\e[1;35m~/#{dir}\e[0m"
+          $Prompt = ''
+        else
+          CMDS["cd"]::(dir)
+
+          $Prompt = "\e[1;35m~/#{dir}\e[0m"
+        end
       else
         !CMDS.has_key?(i) ? (system i) : (puts CMDS[i]::()) unless (i.nil? || i.empty? || i[/\r/m]) == true
 
