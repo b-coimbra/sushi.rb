@@ -3,30 +3,37 @@
 
 system "title #{$0} - #{Dir.pwd}"
 
+# setting prompt's ansi codes
 BEGIN { trace_var :$Prompt, proc { |c| $> << "\n\e[0;\n\e[33m┌─────┄┄ #{c} \e[33m\e[0m#{Time.now.strftime('%H:%M')}\n\e[33m└──┄\e[0m " }; $Prompt = '' }
 
 def main
+  # terminate shell if ctrl+c
   trap("SIGINT") { throw :ctrl_c }
 
   catch :ctrl_c do
+    # getting input from the console
     $<.map do |input|
       i = input.to_s.strip
 
+      # checking if a change of directory was requested
       if i =~ /cd(?<dir>(\s(.*)+))/im
         dir = $~[:dir].to_s.strip
 
+        # execute change if directory exists
         if !test(?e, dir)
-          $> << "No directory named #{dir}\n"
+          $> << "\e[31mNo folder named '#{dir}' in this directory!\e[0m\n"
 
           $Prompt = ''
         else
-          CMDS["cd"]::(dir)
+          CMDS["cd"]::(dir) # activates the built-in command to change directory
 
           $Prompt = "\e[1;35m~/#{dir}\e[0m"
         end
       else
+        # if the input was not defined as a built-in command, then try to execute it through the native shell (unless input is blank)
         !CMDS.has_key?(i) ? (system i) : (puts CMDS[i]::()) unless (i.nil? || i.empty? || i[/\r/m]) == true
 
+        # changing prompt state to the current directory
         $Prompt = "\e[1;35m~/#{Dir.pwd.split('/')[-1..-1]*?/}\e[0m"
       end
     end rescue NoMethodError abort "unknown command"
@@ -41,6 +48,7 @@ def help
   }; exit 0
 end
 
+# Built-in commands
 CMDS = {
   "cd"   => -> (dir = __dir__) { Dir.chdir dir },
   "date" => -> { Time.now.strftime('%d/%m/%Y') },
@@ -52,9 +60,11 @@ CMDS = {
   "pwd"  => -> { Dir.pwd }
 }
 
+# if being executed through ruby, check for --help flag
 case ARGV[0]
 when /(\-+|h)+/i then help
 else main if $0 == __FILE__
 end
 
+# checks if shell terminated with an error
 at_exit { abort $! ? "Uh.. you broke the shell ¯\\_(ツ)_/¯" : "bye (￣▽￣)ノ" }
