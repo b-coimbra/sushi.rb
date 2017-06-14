@@ -6,15 +6,16 @@ system "title #{$0} - #{Dir.pwd}"
 # setting prompt ansi codes
 BEGIN { trace_var :$Prompt, proc { |c| $> << "\n\e[0;\n\e[33m┌─────┄┄ #{c} \e[33m\e[0m#{Time.now.strftime('%H:%M')}\n\e[33m└──┄\e[0m " } }
 
+$dir = "\e[1;35m~/#{Dir.pwd.split('/')[-1..-1]*?/}\e[0m"
+
 def main
-  # terminate shell if ctrl+c
+  # terminate shell with ctrl+c
   trap("SIGINT") { throw :ctrl_c }
 
   catch :ctrl_c do
     # getting input from the console
     $<.map do |input|
       i = input.to_s.strip
-      $dir = Dir.pwd.split('/')[-1..-1]*?/
 
       # checking if a change of directory was requested
       if i =~ /cd(?<dir>(\s(.*)+))/im
@@ -26,8 +27,6 @@ def main
 
           $Prompt = '' unless has_git?
         else
-          $dir = dir
-
           CMDS["cd"]::(dir) # activates the built-in command to change directory
 
           $Prompt = "\e[1;35m~/#{dir}\e[0m" unless has_git?
@@ -37,7 +36,7 @@ def main
         !CMDS.has_key?(i) ? (system i) : (puts CMDS[i]::()) unless (i.nil? || i.empty? || i[/\r/m]) == true
 
         # changing prompt state to the current directory
-        $Prompt = "\e[1;35m~/#{$dir}\e[0m" unless has_git?
+        $Prompt = "\e[1;35m~/#{Dir.pwd.split('/')[-1..-1]*?/}\e[0m" unless has_git?
       end
     end rescue NoMethodError abort "unknown command"
   end
@@ -47,7 +46,7 @@ end
 def has_git?
   if test(?e, '.git')
     if (`git rev-parse --git-dir`) =~ /^\.git$/im
-      $Prompt = "#{`git show-branch`[/^\[.*\]/im]} \e[1;35m~/#{$dir}\e[0m"
+      $Prompt = "#{`git show-branch`[/^\[.*\]/im]} #{$dir}"
     end
   end
 end
@@ -75,7 +74,7 @@ CMDS = {
 case ARGV[0]
 when /(\-+|h)+/i then help # checking for --help flag
 else 
-  $Prompt = '' if !has_git?
+  $Prompt = $dir if !has_git?
   main if $0 == __FILE__
 end
 
