@@ -4,10 +4,10 @@
 system "title #{$0} - #{Dir.pwd}"
 
 # setting prompt ansi codes
-BEGIN { trace_var :$Prompt, proc { |c| $> << "\n\e[0;\n\e[33m┌─────┄┄ #{c} \e[33m\e[0m#{Time.now.strftime('%H:%M')}\n\e[33m└──┄\e[0m " } }
+BEGIN { trace_var :$Prompt, proc { |c| $> << "\n\e[0;\n\e[33m┌─────┄┄ #{c} \e[33m\e[0m#{Time.now.strftime('%H:%M')}\n\e[33m└──┄\e[0m " } }  
 
 # current directory
-$dir = "\e[1;35m~/#{Dir.pwd.split('/')[-1..-1]*?/}\e[0m"
+trace_var :$dir, proc { |loc| $dir = "\e[1;35m~/#{loc}\e[0m" }; $dir = Dir.pwd.split('/')[-1..-1]*?/
 
 def main
   # terminate shell with ctrl+c
@@ -45,6 +45,8 @@ end
 
 # check for git repository
 def has_git?
+  $dir = Dir.pwd.split('/')[-1..-1]*?/
+
   if test(?e, '.git')
     if (`git rev-parse --git-dir`) =~ /^\.git$/im
       $Prompt = "#{`git show-branch`[/^\[.*\]/im]} #{$dir}"
