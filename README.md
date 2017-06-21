@@ -6,4 +6,4 @@ Set it at `Startup > Tasks` and paste the location to `C:\<your-location>\shell.
 
 ### Preview
 
-![preview](https://i.imgur.com/tKPAXJs.png)
+![preview](https://i.imgur.com/FPIabMK.png)
