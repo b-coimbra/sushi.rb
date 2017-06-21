@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# encoding: UTF-8
+# encoding: utf-8
 
 system "title #{$0} - #{Dir.pwd}"
 
@@ -7,10 +7,11 @@ system "title #{$0} - #{Dir.pwd}"
 BEGIN { trace_var :$Prompt, proc { |c| $> << "\n\e[0;\n\e[33m┌─────┄┄ #{c} \e[33m\e[0m#{Time.now.strftime('%H:%M')}\n\e[33m└──┄\e[0m " } }  
 
 # current directory
-trace_var :$dir, proc { |loc| $dir = "\e[1;35m~/#{loc}\e[0m" }; $dir = Dir.pwd.split('/')[-1..-1]*?/
+trace_var :$dir, proc { |loc| $dir = "\e[1;35m~/#{loc}\e[0m" }
 
 def main
-  # terminate shell with ctrl+c
+  $dir = Dir.pwd.split('/')[-1..-1]*?/
+
   trap("SIGINT") { throw :ctrl_c }
 
   catch :ctrl_c do
@@ -34,10 +35,10 @@ def main
         end
       else
         # if the input was not defined as a built-in command, then try to execute it through the native shell (unless input is blank)
-        !CMDS.has_key?(i) ? (system i) : (puts CMDS[i]::()) unless (i.nil? || i.empty? || i[/\r/m]) == true
+        !CMDS.has_key?(i) ? (system i) : (puts CMDS[i]::()) unless (i.nil? || i.empty? || i[/^[\r|\t|\s]+$/m])
 
         # changing prompt state to the current directory
-        $Prompt = "\e[1;35m~/#{Dir.pwd.split('/')[-1..-1]*?/}\e[0m" unless has_git?
+        $Prompt = $dir unless has_git?
       end
     end rescue NoMethodError abort "unknown command"
   end
@@ -49,7 +50,7 @@ def has_git?
 
   if test(?e, '.git')
     if (`git rev-parse --git-dir`) =~ /^\.git$/im
-      $Prompt = "#{`git show-branch`[/^\[.*\]/im]} #{$dir}"
+      $Prompt = "git:#{`git show-branch`[/^\[.*\]/im]} #{$dir}"
     end
   end
 end
@@ -64,7 +65,7 @@ end
 
 # Built-in commands
 CMDS = {
-  "cd"   => -> (dir = __dir__) { Dir.chdir dir },
+  "cd"   => -> (dir = ENV['HOME']) { Dir.chdir dir },
   "date" => -> { Time.now.strftime('%d/%m/%Y') },
   "exit" => -> { $> << "bye (￣▽￣)ノ"; exit 0 },
   "cls"  => -> { system 'cls' },
