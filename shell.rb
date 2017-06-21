@@ -1,16 +1,16 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 
-system "title #{$0} - #{Dir.pwd}"
+system "title #{$0}"
 
 # setting prompt ansi codes
-BEGIN { trace_var :$Prompt, proc { |c| $> << "\n\e[0;\n\e[33m┌─────┄┄ #{c} \e[33m\e[0m#{Time.now.strftime('%H:%M')}\n\e[33m└──┄\e[0m " } }  
+BEGIN { trace_var :$Prompt, proc { |c| $> << "\n\e[0;\n\e[33m┌─────┄┄ #{c} \e[33m\e[0m\e[1;35m░█\e[0m\e[1;46m #{Time.now.strftime('%H:%M')} \e[0m\e[1;35m█░\e[0m\n\e[33m└──┄\e[0m " } }  
 
 # current directory
 trace_var :$dir, proc { |loc| $dir = "\e[1;35m~/#{loc}\e[0m" }
 
 def main
-  $dir = Dir.pwd.split('/')[-1..-1]*?/
+  $dir ||= __dir__.split(File::SEPARATOR)[-1]*?/
 
   trap("SIGINT") { throw :ctrl_c }
 
@@ -27,11 +27,11 @@ def main
         if !test(?e, dir)
           $> << "\e[31mNo folder named '#{dir}' in this directory!\e[0m\n"
 
-          $Prompt = '' unless has_git?
+          $Prompt = $dir if !has_git?
         else
           CMDS["cd"]::(dir) # activates the built-in command to change directory
 
-          $Prompt = "\e[1;35m~/#{dir}\e[0m" unless has_git?
+          $Prompt = "\e[1;35m#{$dir}\e[0m" unless has_git?
         end
       else
         # if the input was not defined as a built-in command, then try to execute it through the native shell (unless input is blank)
@@ -40,13 +40,13 @@ def main
         # changing prompt state to the current directory
         $Prompt = $dir unless has_git?
       end
-    end rescue NoMethodError abort "unknown command"
+    end rescue NoMethodError abort "unknown command", main
   end
 end
 
 # check for git repository
 def has_git?
-  $dir = Dir.pwd.split('/')[-1..-1]*?/
+  $dir = Dir.pwd.split(File::SEPARATOR)[-1..-1]*?/
 
   if test(?e, '.git')
     if (`git rev-parse --git-dir`) =~ /^\.git$/im
@@ -71,7 +71,7 @@ CMDS = {
   "cls"  => -> { system 'cls' },
   "cmds" => -> { CMDS.keys*?| },
   "path" => -> { ENV['Path'] },
-  "ls"   => -> { Dir["./*"] },
+  "ls"   => -> { Dir['./*'] },
   "pwd"  => -> { Dir.pwd }
 }
 
