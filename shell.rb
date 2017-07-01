@@ -3,7 +3,9 @@
 
 system "title #{$0}"
 
-# setting prompt ansi codes
+$> << "\nwelcome back, #{ENV['COMPUTERNAME'].capitalize} (´･ω･`)\n"
+
+# setting ansi codes
 BEGIN { trace_var :$Prompt, proc { |c| $> << "\n\e[0;\n\e[33m┌─────┄┄ #{c} \e[33m\e[0m\e[1;35m░█\e[0m\e[1;46m #{Time.now.strftime('%H:%M')} \e[0m\e[1;35m█░\e[0m\n\e[33m└──┄\e[0m " } }  
 
 # current directory
@@ -15,7 +17,6 @@ def main
   trap("SIGINT") { throw :ctrl_c }
 
   catch :ctrl_c do
-    # getting input from the console
     $<.map do |input|
       i = input.to_s.strip
 
@@ -35,7 +36,7 @@ def main
         end
       else
         # if the input was not defined as a built-in command, then try to execute it through the native shell (unless input is blank)
-        !CMDS.has_key?(i) ? (system i) : (puts CMDS[i]::()) unless (i.nil? || i.empty? || i[/^[\r|\t|\s]+$/m])
+        !CMDS.has_key?(i) ? (system i) : (puts CMDS[i]::()) unless (i.nil? || i.empty? || i[/^[\r|\t]+$/m])
 
         # changing prompt state to the current directory
         $Prompt = $dir unless has_git?
@@ -44,7 +45,6 @@ def main
   end
 end
 
-# check for git repository
 def has_git?
   $dir = Dir.pwd.split(File::SEPARATOR)[-1..-1]*?/
 
@@ -65,14 +65,14 @@ end
 
 # Built-in commands
 CMDS = {
-  "cd"   => -> (dir = ENV['HOME']) { Dir.chdir dir },
-  "date" => -> { Time.now.strftime('%d/%m/%Y') },
-  "exit" => -> { $> << "bye (￣▽￣)ノ"; exit 0 },
-  "cls"  => -> { system 'cls' },
-  "cmds" => -> { CMDS.keys*?| },
-  "path" => -> { ENV['Path'] },
-  "ls"   => -> { Dir['./*'] },
-  "pwd"  => -> { Dir.pwd }
+  "cd"    => -> (dir = ENV['HOME']) { Dir.chdir dir },
+  "date"  => -> { Time.now.strftime('%d/%m/%Y') },
+  "exit"  => -> { $> << "bye (￣▽￣)ノ"; exit 0 },
+  "clear" => -> { system 'cls' },
+  "cmds"  => -> { CMDS.keys*?| },
+  "path"  => -> { ENV['Path'] },
+  "ls"    => -> { Dir['./*'] },
+  "pwd"   => -> { Dir.pwd }
 }
 
 case ARGV[0]
@@ -82,5 +82,5 @@ else
   main if $0 == __FILE__
 end
 
-# checks if shell terminated with an error
+# check if terminated with an error
 at_exit { abort $! ? "Uh.. you broke the shell ¯\\_(ツ)_/¯" : "bye (￣▽￣)ノ" }
