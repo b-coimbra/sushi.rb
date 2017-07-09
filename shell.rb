@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
-
 system "title #{$0}"
 
 $> << "\nwelcome back, #{ENV['COMPUTERNAME'].capitalize} (´･ω･`)\n"
@@ -19,25 +18,19 @@ def main
   catch :ctrl_c do
     $<.map do |input|
       i = input.to_s.strip
-
-      # checking if a change of directory was requested
-      if i =~ /cd(?<dir>(\s(.*)+))/im
+      # when a directory change is requested
+      if i =~ /cd(?<dir>(\s(.*)+))/im 
         dir = $~[:dir].to_s.strip
-
-        # execute change if directory exists
-        if !test(?e, dir)
+        if !test ?e, dir # checking if it exists
           $> << "\e[31mNo folder named '#{dir}' in this directory!\e[0m\n"
-
           $Prompt = $dir if !has_git?
         else
-          CMDS["cd"]::(dir) # activates the built-in command to change directory
-
+          CMDS["cd"]::(dir) # changes directory
           $Prompt = "\e[1;35m#{$dir}\e[0m" unless has_git?
         end
       else
-        # if the input was not defined as a built-in command, then try to execute it through the native shell (unless input is blank)
+        # trigger command through native shell if not defined as a built-in
         !CMDS.has_key?(i) ? (system i) : (puts CMDS[i]::()) unless (i.nil? || i.empty? || i[/^[\r|\t]+$/m])
-
         # changing prompt state to the current directory
         $Prompt = $dir unless has_git?
       end
@@ -48,8 +41,8 @@ end
 def has_git?
   $dir = Dir.pwd.split(File::SEPARATOR)[-1..-1]*?/
 
-  if test(?e, '.git')
-    if (`git rev-parse --git-dir`) =~ /^\.git$/im
+  if test ?e, '.git'
+    if `git rev-parse --git-dir` =~ /^\.git$/im
       $Prompt = "git:#{`git show-branch`[/^\[.*\]/im]} #{$dir}"
     end
   end
@@ -76,11 +69,11 @@ CMDS = {
 }
 
 case ARGV[0]
-when /(\-+|h)+/i then help # checking for --help flag
+when /(\-+|h)+/i then help # --help flag
 else 
   $Prompt = $dir if !has_git?
   main if $0 == __FILE__
 end
 
-# check if terminated with an error
+# check for exception when terminating
 at_exit { abort $! ? "Uh.. you broke the shell ¯\\_(ツ)_/¯" : "bye (￣▽￣)ノ" }
