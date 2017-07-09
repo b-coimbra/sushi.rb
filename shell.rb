@@ -2,10 +2,10 @@
 # encoding: utf-8
 system "title #{$0}"
 
-$> << "\nwelcome back, #{ENV['COMPUTERNAME'].capitalize} (´･ω･`)\n"
+$> << "\nwelcome back, #{ENV['COMPUTERNAME'].capitalize unless RUBY_PLATFORM[/linux|darwin|mac|solaris|bsd/im]} (´･ω･`)\n"
 
 # setting ansi codes
-BEGIN { trace_var :$Prompt, proc { |c| $> << "\n\e[0;\n\e[33m┌─────┄┄ #{c} \e[33m\e[0m\e[1;35m░█\e[0m\e[1;46m #{Time.now.strftime('%H:%M')} \e[0m\e[1;35m█░\e[0m\n\e[33m└──┄\e[0m " } }  
+BEGIN { trace_var :$Prompt, proc { |c| $> << "\e[33m┌─────┄┄ #{c} \e[33m\e[0m\e[1;35m░█\e[0m\e[1;46m #{Time.now.strftime('%H:%M')} \e[0m\e[1;35m█░\e[0m\n\e[33m└──┄\e[0m " } }  
 
 # current directory
 trace_var :$dir, proc { |loc| $dir = "\e[1;35m~/#{loc}\e[0m" }
