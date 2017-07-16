@@ -2,10 +2,10 @@
 # encoding: utf-8
 system "title #{$0}"
 
-$> << "\nwelcome back, #{ENV['COMPUTERNAME'].capitalize unless RUBY_PLATFORM[/linux|darwin|mac|solaris|bsd/im]} (´･ω･`)\n"
+$> << "\nwelcome back#{', '+ENV['COMPUTERNAME'].capitalize unless RUBY_PLATFORM[/linux|darwin|mac|solaris|bsd/im]} (´･ω･`)\n"
 
 # setting ansi codes
-BEGIN { trace_var :$Prompt, proc { |c| $> << "\e[33m┌─────┄┄ #{c} \e[33m\e[0m\e[1;35m░█\e[0m\e[1;46m #{Time.now.strftime('%H:%M')} \e[0m\e[1;35m█░\e[0m\n\e[33m└──┄\e[0m " } }  
+BEGIN { trace_var :$Prompt, proc { |c| $> << "\n\e[33m┌─────┄┄ #{c} \e[33m\e[0m\e[1;35m░█\e[0m\e[1;46m #{Time.now.strftime('%H:%M')} \e[0m\e[1;35m█░\e[0m\n\e[33m└──┄\e[0m " } }  
 
 # current directory
 trace_var :$dir, proc { |loc| $dir = "\e[1;35m~/#{loc}\e[0m" }
@@ -58,15 +58,24 @@ end
 
 # Built-in commands
 CMDS = {
-  "cd"    => -> (dir = ENV['HOME']) { Dir.chdir dir },
-  "date"  => -> { Time.now.strftime('%d/%m/%Y') },
-  "exit"  => -> { $> << "bye (￣▽￣)ノ"; exit 0 },
-  "clear" => -> { system 'cls' },
-  "cmds"  => -> { CMDS.keys*?| },
-  "path"  => -> { ENV['Path'] },
-  "ls"    => -> { Dir['./*'] },
-  "pwd"   => -> { Dir.pwd }
+  "cd"    =>-> (dir = ENV['HOME']) { Dir.chdir dir },
+  "date"  =>-> { Time.now.strftime('%d/%m/%Y') },
+  "exit"  =>-> { $> << "bye (￣▽￣)ノ"; exit 0 },
+  "clear" =>-> { system 'cls' },
+  "cmds"  =>-> { CMDS.keys*?| },
+  "path"  =>-> { ENV['Path'] },
+  "ls"    =>-> { Dir['./*'] },
+  "pwd"   =>-> { Dir.pwd }
 }
+
+class String
+  define_method(:alias) { |cmd| CMDS.store("#{self}", -> { system cmd }) }
+end
+
+# Your aliases
+'c'.alias('cls')
+'q'.alias('exit')
+'e'.alias('emacs -nw')
 
 case ARGV[0]
 when /(\-+|h)+/i then help # --help flag
