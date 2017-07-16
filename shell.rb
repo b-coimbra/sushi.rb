@@ -73,9 +73,11 @@ class String
 end
 
 # Your aliases
-'c'.alias('cls')
-'q'.alias('exit')
-'e'.alias('emacs -nw')
+'c'  .alias 'cls'
+'q'  .alias 'exit'
+'s'  .alias 'subl .'
+'e'  .alias 'emacs -nw'
+'off'.alias 'shutdown -s -f -t 0'
 
 case ARGV[0]
 when /(\-+|h)+/i then help # --help flag
