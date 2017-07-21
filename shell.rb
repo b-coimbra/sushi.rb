@@ -10,6 +10,8 @@ BEGIN { trace_var :$Prompt, proc { |c| $> << "\n\e[33m┌─────┄┄ #
 # current directory
 trace_var :$dir, proc { |loc| $dir = "\e[1;35m~/#{loc}\e[0m" }
 
+$buffer = []
+
 def main
   $dir ||= __dir__.split(File::SEPARATOR)[-1]*?/
 
@@ -26,7 +28,7 @@ def main
           $Prompt = $dir if !has_git?
         else
           CMDS["cd"]::(dir) # changes directory
-          $Prompt = "\e[1;35m#{$dir}\e[0m" unless has_git?
+          $Prompt = "\e[1;35m#$dir\e[0m" unless has_git?
         end
       else
         # trigger command through native shell if not defined as a built-in
@@ -34,6 +36,7 @@ def main
         # changing prompt state to the current directory
         $Prompt = $dir unless has_git?
       end
+      $buffer << i
     end rescue NoMethodError abort "unknown command", main
   end
 end
@@ -43,7 +46,7 @@ def has_git?
 
   if test ?e, '.git'
     if `git rev-parse --git-dir` =~ /^\.git$/im
-      $Prompt = "git:#{`git show-branch`[/^\[.*\]/im]} #{$dir}"
+      $Prompt = "git:#{`git show-branch`[/^\[.*\]/im]} #$dir"
     end
   end
 end
@@ -58,26 +61,30 @@ end
 
 # Built-in commands
 CMDS = {
-  "cd"    =>-> (dir = ENV['HOME']) { Dir.chdir dir },
-  "date"  =>-> { Time.now.strftime('%d/%m/%Y') },
-  "exit"  =>-> { $> << "bye (￣▽￣)ノ"; exit 0 },
-  "clear" =>-> { system 'cls' },
-  "cmds"  =>-> { CMDS.keys*?| },
-  "path"  =>-> { ENV['Path'] },
-  "ls"    =>-> { Dir['./*'] },
-  "pwd"   =>-> { Dir.pwd }
+  "cd"      =>-> (dir = ENV['HOME']) { Dir.chdir dir },
+  "date"    =>-> { Time.now.strftime('%d/%m/%Y') },
+  "exit"    =>-> { $> << "bye (￣▽￣)ノ"; exit 0 },
+  "<"       =>-> { system $buffer[-1] },
+  "clear"   =>-> { system 'cls' },
+  "cmds"    =>-> { CMDS.keys*?| },
+  "path"    =>-> { ENV['Path'] },
+  "history" =>-> { $buffer*?| },
+  "ls"      =>-> { Dir['./*'] },
+  "pwd"     =>-> { Dir.pwd }
 }
 
 class String
-  define_method(:alias) { |cmd| CMDS.store("#{self}", -> { system cmd }) }
+  define_method(:alias) { |cmd| CMDS.store("#{self}", -> { self[/q/i] ? eval(cmd) : system(cmd) }) }
 end
 
 # Your aliases
-'c'  .alias 'cls'
-'q'  .alias 'exit'
-'s'  .alias 'subl .'
-'e'  .alias 'emacs -nw'
-'off'.alias 'shutdown -s -f -t 0'
+'c'   .alias 'cls'
+'q'   .alias 'exit'
+'s'   .alias 'subl .'
+'e'   .alias 'emacs -nw'
+'o'   .alias 'explorer .'
+'off' .alias 'shutdown -s -f -t 0'
+'att' .alias 'sudo apt-get update'
 
 case ARGV[0]
 when /(\-+|h)+/i then help # --help flag
