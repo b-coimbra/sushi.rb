@@ -9,7 +9,7 @@ define_method(:is_windows) { !RUBY_PLATFORM[/linux|darwin|mac|solaris|bsd/im] }
 $> << "\nwelcome back#{', '+ENV['COMPUTERNAME'].capitalize if is_windows} (´･ω･`)\n"
 
 # prompt ansi codes
-BEGIN { trace_var :$Prompt, proc { |c| $> << "\n\e[33m┌─────┄┄ #{c} \e[33m\e[0m(#{Time.now.strftime('%H:%M')})\n\e[33m└──┄\e[0m " } }  
+BEGIN { trace_var :$Prompt, proc { |c| $> << "\n\e[33m┌─────┄┄ #{c} \e[33m\e[0m\n\e[33m└──┄\e[0m " } }  
 
 # current directory
 trace_var :$dir, proc { |loc| $dir = "\e[1;35m~/#{loc}\e[0m" }
@@ -77,9 +77,9 @@ CMDS = {
   "date"    =>-> { Time.now.strftime('%d/%m/%Y') },
   "exit"    =>-> { $> << "bye (￣▽￣)ノ"; exit 0 },
   "<"       =>-> { CMDS[$buffer[-1]]::() },
-  "cmds"    =>-> { CMDS.keys*(?|) },
+  "cmds"    =>-> { CMDS.keys*(?\s"\s") },
   "path"    =>-> { ENV['Path'] },
-  "history" =>-> { $buffer*?| },
+  "history" =>-> { $buffer*?\n },
   "ls"      =>-> { Dir['*'] },
   "pwd"     =>-> { Dir.pwd }
 }
@@ -97,10 +97,10 @@ end
 'off' .alias 'shutdown -s -f -t 0'
 'att' .alias 'sudo apt-get update'
 
-case ARGV[0]
+case $*[0]
 when /(\-+|h)+/i then help # --help flag
 else 
-  !has_git? && $Prompt = $dir
+  $Prompt = $dir if !has_git?
   main if $0 == __FILE__
 end
 
