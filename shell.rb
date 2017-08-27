@@ -9,7 +9,7 @@ define_method(:is_windows) { !RUBY_PLATFORM[/linux|darwin|mac|solaris|bsd/im] }
 $> << "\nwelcome back#{', '+ENV['COMPUTERNAME'].capitalize if is_windows} (´･ω･`)\n"
 
 # prompt ansi codes
-BEGIN { trace_var :$Prompt, proc { |c| $> << "\n\e[33m┌─────┄┄ #{c} \e[33m\e[0m\e[1;35m░█\e[0m\e[1;46m #{Time.now.strftime('%H:%M')} \e[0m\e[1;35m█░\e[0m\n\e[33m└──┄\e[0m " } }  
+BEGIN { trace_var :$Prompt, proc { |c| $> << "\n\e[33m┌─────┄┄ #{c} \e[33m\e[0m(#{Time.now.strftime('%H:%M')})\n\e[33m└──┄\e[0m " } }  
 
 # current directory
 trace_var :$dir, proc { |loc| $dir = "\e[1;35m~/#{loc}\e[0m" }
@@ -29,16 +29,16 @@ def main
         dir = $~[:dir].to_s.strip
         if !test ?e, dir # checking if it exists
           $> << "\e[31mNo folder named '#{dir}' in this directory!\e[0m\n"
-          $Prompt = $dir if !has_git?
+          !has_git? && $Prompt = $dir 
         else
           CMDS["cd"]::(dir) # changes directory
-          $Prompt = "\e[1;35m#$dir\e[0m" unless has_git?
+           has_git? || $Prompt = "\e[1;35m#$dir\e[0m"
         end
       else
         # trigger command through native shell if not defined as a built-in
-        !CMDS.has_key?(i) ? (system i) : (puts CMDS[i]::()) unless (i.nil? || i.empty? || i[/^[\r|\t]+$/m])
+        (i.nil? || i.empty? || i[/^[\r|\t]+$/m]) || (!CMDS.has_key?(i) ? (system i) : (puts CMDS[i]::()))
         # changing prompt state to the current directory
-        $Prompt = $dir unless has_git?
+        has_git? || $Prompt = $dir 
       end
       $buffer << i
     end rescue NoMethodError abort "unknown command", main
@@ -100,7 +100,7 @@ end
 case ARGV[0]
 when /(\-+|h)+/i then help # --help flag
 else 
-  $Prompt = $dir if !has_git?
+  !has_git? && $Prompt = $dir
   main if $0 == __FILE__
 end
 
