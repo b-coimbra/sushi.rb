@@ -3,7 +3,7 @@
 $: << File.join(__dir__, 'C:\\cygwin\\bin')
 
 require 'fileutils'
-require 'win32ole'
+require 'readline'
 
 system "title #{$0}"
 
@@ -26,7 +26,8 @@ def main
   trap("SIGINT") { throw :ctrl_c }
 
   catch :ctrl_c do
-    $<.map do |input|
+    while input = history
+      autocompletion
       input.to_s.strip.split('&&').map do |i|
         # when a directory change is requested
         if i =~ /cd(?<dir>(\s(.*)+))/im
@@ -43,6 +44,22 @@ def main
       end
     end rescue NoMethodError abort "unknown command", main
   end
+end
+
+def history
+  input = Readline.readline('', true)
+  return nil if input.nil?
+  # read a line and append to history
+  Readline::HISTORY.pop if input =~ /^\s*$/ or Readline::HISTORY.to_a[-2] == input
+  input
+end
+
+def autocompletion
+  Readline.completion_append_character = ''
+  # completion for commands
+  comp = proc { |s| CMDS.keys.grep(/^#{Regexp.escape(s)}/im) }
+  # completion for directories
+  Readline.completion_proc = Proc.new { |str| Dir[str+'*'].grep(/^#{Regexp.escape(str)}/im) } || comp
 end
 
 def change_dir(dir)
@@ -87,6 +104,7 @@ CMDS = {
   "cd"      =>-> (dir = ENV['HOME']) { Dir.chdir dir; nil },
   "date"    =>-> { Time.now.strftime('%d/%m/%Y') },
   "exit"    =>-> { $> << "bye (￣▽￣)ノ"; exit 0 },
+  "update"  =>-> { `git pull origin master` },
   "cmds"    =>-> { CMDS.keys*(?\s"\s") },
   "path"    =>-> { ENV['Path'] },
   "history" =>-> { $buffer*?\n },
