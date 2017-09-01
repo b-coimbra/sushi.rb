@@ -9,6 +9,10 @@ system "title #{$0}"
 
 define_method(:is_windows) { !RUBY_PLATFORM[/linux|darwin|mac|solaris|bsd/im] }
 
+define_method(:blank?) { |i| i.nil? || i.empty? || i[/^[\r|\t|\s]+$/m] }
+
+define_method(:show_prompt_git?) { has_git? || $Prompt = $dir }
+
 $> << "\nwelcome back#{', '+ENV['COMPUTERNAME'].capitalize if is_windows} (´･ω･`)\n"
 
 # prompt ansi codes
@@ -23,12 +27,12 @@ def main
   # current directory
   $dir ||= __dir__.split(File::SEPARATOR)[-1]*?/
 
-  trap("SIGINT") { throw :ctrl_c }
+  trap("SIGINT") { show_prompt_git? }
 
   catch :ctrl_c do
     while input = history
       # handling blank inputs
-      has_git? || $Prompt = $dir if input.nil? || input.empty?
+      show_prompt_git? if blank?(input)
       # trigger autocompletion
       autocompletion
       input.to_s.strip.split('&&').map do |i|
@@ -38,10 +42,10 @@ def main
         else
           # trigger command through native shell if not defined as a built-in
           Thread.new {
-            (!CMDS.has_key?(i) ? (system i) : (puts CMDS[i]::())) unless (i.nil? || i.empty? || i[/^[\r|\t]+$/m])
+            (!CMDS.has_key?(i) ? (system i) : (puts CMDS[i]::())) unless blank?(i)
           }.join
           # changing prompt state to the current directory
-          has_git? || $Prompt = $dir 
+          show_prompt_git?
         end
         $buffer << i
       end
