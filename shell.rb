@@ -27,6 +27,9 @@ def main
 
   catch :ctrl_c do
     while input = history
+      # handling blank inputs
+      has_git? || $Prompt = $dir if input.nil? || input.empty?
+      # trigger autocompletion
       autocompletion
       input.to_s.strip.split('&&').map do |i|
         # when a directory change is requested
@@ -48,7 +51,6 @@ end
 
 def history
   input = Readline.readline('', true)
-  return nil if input.nil?
   # read a line and append to history
   Readline::HISTORY.pop if input =~ /^\s*$/ or Readline::HISTORY.to_a[-2] == input
   input
