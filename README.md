@@ -15,8 +15,12 @@ Custom prompt with unix features for Cmder (or ConEmu) written in Ruby.
 - Type `ocra shell.rb` to build it.
 
 ### To do
-- [ ] Add command-line extensions (or import them from cygwin)
-- [ ] Command stacking (eg `cd documents && ls` 
+- [x] Add command-line extensions (or import them from cygwin)
+
+- [x] Command stacking (eg `cd documents && ls`)
+
+- [ ] Package installer (maybe through [Chocolatey](https://chocolatey.org/))
+
 
 ### Preview
 
