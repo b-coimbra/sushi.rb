@@ -2,6 +2,8 @@
 
 Custom prompt with unix features for Cmder (or ConEmu) written in Ruby.
 
+Inspired by [shirt](https://github.com/jstorimer/shirt)
+
 ### Usage
 
 - Clone this repo, or download it into a directory of your choice.
