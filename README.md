@@ -14,7 +14,7 @@ Inspired by [shirt](https://github.com/jstorimer/shirt)
 ### Building
 
 - Install the [OCRA](https://github.com/larsch/ocra) gem with `gem install ocra`
-- Type `ocra src --output shell` in the root directory to build it.
+- Type `ocra src --output shell.exe` in the root directory to build it.
 
 ### To do
 - [x] Add command-line extensions (or import them from cygwin)
