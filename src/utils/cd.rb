@@ -3,7 +3,7 @@ def change_dir(dir)
     $> << "No folder named '#{dir}' in this directory!\n".red
     !has_git? && $Prompt = $dir 
   else
-    CMDS[:cd]::(dir)
+    CMDS[:cd][0]::(dir)
     has_git? || $Prompt = $dir.magenta
   end
 end

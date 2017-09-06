@@ -1,3 +1,4 @@
+# encoding: UTF-8
 def history
   input = Readline.readline('', true)
   # read a line and append to history

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require_relative 'cmds'
 require_relative 'aliases'
 require_relative 'colors'
@@ -26,19 +27,20 @@ class Core
     trap("SIGINT") { show_prompt_git? }
 
     catch :ctrl_c do
-      while input = history
+      while input = history()
         # handling blank inputs
         show_prompt_git? if blank?(input)
         # trigger autocompletion
-        autocompletion
+        autocompletion()
         input.to_s.strip.split('&&').map do |i|
+          print("→ ", input.underline.brown, " (#{CMDS[i.to_sym][1].values.join(' ')})\n\e[0m\n") if CMDS.has_key?(i.to_sym)
           # when a directory change is requested
           if i =~ /cd(?<dir>(\s(.*)+))/im
             change_dir($~[:dir].to_s.strip)
           else
             # trigger command through native shell if not defined as a built-in
             Thread.new {
-              (!CMDS.has_key?(i.to_sym) ? (system i) : (puts CMDS[i.to_sym]::())) unless blank?(i)
+              (!CMDS.has_key?(i.to_sym) ? (system i) : (puts CMDS[i.to_sym][0]::())) unless blank?(i)
             }.join
             # changing prompt state to the current directory
             show_prompt_git?
@@ -50,4 +52,4 @@ class Core
   end
 end
 
-$Prompt = $dir if !has_git?
+show_prompt_git?

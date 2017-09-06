@@ -9,11 +9,11 @@ system 'title rb-shell'
 Dir[File.join(__dir__, %w[utils], '*.rb')].map(&method(:require))
 
 # PROMPT
-BEGIN { trace_var :$Prompt, proc { |dir| $> << "\n\e[33m┌─────┄┄ #{dir} \e[33m\e[0m\n\e[33m└──┄\e[0m " } }
+BEGIN { trace_var :$Prompt, proc { |dir| $> << "\n\e[33m┌─────┄┄ #{dir} \n\e[33m└──┄\e[0m " } }
 
 case ARGV[0]
 when /(\-+|h)+/i then help # --help flag
-else 
+else
   # initialize the shell
   Core::new.main if __FILE__ == $0 
 end
