@@ -26,3 +26,6 @@ Inspired by [shirt](https://github.com/jstorimer/shirt)
 ### Preview
 
 ![preview](https://i.imgur.com/T933Vu1.png)
+
+### Contributing
+Bug fixes and pull requests are welcome.
