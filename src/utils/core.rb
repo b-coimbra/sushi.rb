@@ -33,7 +33,7 @@ class Core
         # trigger autocompletion
         autocompletion()
         input.to_s.strip.split('&&').map do |i|
-          print("→ ", input.underline.brown, "\n\e[0m\n") if CMDS.has_key?(i.to_sym)
+          # print("→ ", input.underline.brown, " (#{CMDS[i.to_sym][1].values.join(' ')})\n\e[0m\n") if CMDS.has_key?(i.to_sym)
           # when a directory change is requested
           if i =~ /cd(?<dir>(\s(.*)+))/im
             change_dir($~[:dir].to_s.strip)
