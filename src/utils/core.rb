@@ -32,20 +32,24 @@ class Core
         show_prompt_git? if blank?(input)
         # trigger autocompletion
         autocompletion()
-        input.to_s.strip.split('&&').map do |i|
-          # print("→ ", input.underline.brown, " (#{CMDS[i.to_sym][1].values.join(' ')})\n\e[0m\n") if CMDS.has_key?(i.to_sym)
+        input.to_s.strip.split('&&').map do |line|
           # when a directory change is requested
-          if i =~ /cd(?<dir>(\s(.*)+))/im
+          if line =~ /cd(?<dir>(\s(.*)+))/im
             change_dir($~[:dir].to_s.strip)
           else
+            command, args = line.split("\s")
             # trigger command through native shell if not defined as a built-in
             Thread.new {
-              (!CMDS.has_key?(i.to_sym) ? (system i) : (puts CMDS[i.to_sym][0]::())) unless blank?(i)
+              if !CMDS.has_key?(command.to_sym)
+                system line
+              else
+                puts blank?(args) ? CMDS[command.to_sym][0]::() : CMDS[command.to_sym][0]::(args)
+              end unless blank?(line)
             }.join
             # changing prompt state to the current directory
             show_prompt_git?
           end
-          $buffer << i
+          $buffer << line
         end
       end rescue NoMethodError abort "unknown command", main
     end

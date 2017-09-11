@@ -15,7 +15,7 @@ case ARGV[0]
 when /(\-+|h)+/i then help # --help flag
 else
   # initialize the shell
-  Core::new.main if __FILE__ == $0 
+  Core::new.main if __FILE__ == $0
 end
 
 # Handle errors when exiting

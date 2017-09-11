@@ -50,6 +50,10 @@ CMDS = {
     -> { ENV['Path'] },
     :description => "environment variables"
   ],
+  :cowsay  => [
+    -> (*phrase) { cowsay(phrase.join("\s").to_s) },
+    :description => "cowsay command"
+  ],
   :history => [
     -> { $buffer*?\n },
     :description => "command history"
