@@ -14,6 +14,10 @@ CMDS = {
     -> (file) { FileUtils.rm_r(file, :verbose => true) },
     :description => "removes file"
   ],
+  :calc    => [
+    -> (*expression) { calc(expression.join("\s")) },
+    :description => "calculator"
+  ],
   :touch   => [
     -> (*files) { FileUtils.touch(files.split("\s")) },
     :description => "creates file"
@@ -38,6 +42,10 @@ CMDS = {
     -> { $> << "bye (￣▽￣)ノ"; exit 0 },
     :description => "exit shell"
   ],
+  :echo    => [
+    -> (*str) { print str.join("\s") },
+    :description => "prints text to shell"
+  ],
   :update  => [
     -> { `git pull origin master` },
     :description => "updates shell"
@@ -59,7 +67,7 @@ CMDS = {
     :description => "command history"
   ],
   :ls      => [
-    -> { Dir['*'] },
+    -> { ls },
     :description => "show all files on the current folder"
   ],
   :pwd     => [

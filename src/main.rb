@@ -3,7 +3,7 @@
 require 'readline'
 require 'fileutils'
 
-system 'title rb-shell'
+system 'title rb-shell && cls'
 
 # loads all packages
 Dir[File.join(__dir__, %w[utils], '*.rb')].map(&method(:require))

@@ -15,7 +15,7 @@ define_method(:show_prompt_git?) { has_git? || $Prompt = $dir }
 
 trace_var :$dir, proc { |loc| $dir = "~/#{loc}".magenta }
 
-$> << "\nwelcome back#{', '+ENV['COMPUTERNAME'].capitalize if is_windows} (´･ω･`)\n"
+$> << "\nwelcome back#{', '+ENV['COMPUTERNAME'].capitalize if is_windows}! \n"
 
 class Core
   $buffer = []
@@ -37,13 +37,13 @@ class Core
           if line =~ /cd(?<dir>(\s(.*)+))/im
             change_dir($~[:dir].to_s.strip)
           else
-            command, args = line.split("\s")
+            command, *args = line.split("\s")
             # trigger command through native shell if not defined as a built-in
             Thread.new {
               if !CMDS.has_key?(command.to_sym)
                 system line
               else
-                puts blank?(args) ? CMDS[command.to_sym][0]::() : CMDS[command.to_sym][0]::(args)
+                puts args.empty? ? CMDS[command.to_sym][0]::() : CMDS[command.to_sym][0]::(args)
               end unless blank?(line)
             }.join
             # changing prompt state to the current directory

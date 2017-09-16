@@ -1,11 +1,12 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
+## One-file version of rb-shell, for testing
 $: << File.join(__dir__, 'C:\\cygwin\\bin')
 
 require 'fileutils'
 require 'readline'
 
-system "title #{$0}"
+system "title rb-shell && cls"
 
 define_method(:is_windows) { !RUBY_PLATFORM[/linux|darwin|mac|solaris|bsd/im] }
 
@@ -13,10 +14,10 @@ define_method(:blank?) { |i| i.nil? || i.empty? || i[/^[\r|\t|\s]+$/m] }
 
 define_method(:show_prompt_git?) { has_git? || $Prompt = $dir }
 
-$> << "\nwelcome back#{', '+ENV['COMPUTERNAME'].capitalize if is_windows} (´･ω･`)\n"
+$> << "\nwelcome back#{', '+ENV['COMPUTERNAME'].capitalize if is_windows}!\n"
 
 # prompt ansi codes
-BEGIN { trace_var :$Prompt, proc { |c| $> << "\n\e[33m┌─────┄┄ #{c} \e[33m\e[0m\n\e[33m└──┄\e[0m " } }
+BEGIN { trace_var :$Prompt, proc { |dir| $> << "\n\e[36m┌────── #{dir} \e[36m\e[0m\n\e[36m└────\e[0m " } }
 
 # tracing directory changes
 trace_var :$dir, proc { |loc| $dir = "\e[1;35m~/#{loc}\e[0m" }
@@ -27,7 +28,7 @@ def main
   # current directory
   $dir ||= __dir__.split(File::SEPARATOR)[-1]*?/
 
-  trap("SIGINT") { show_prompt_git? }
+  trap("SIGINT") { throw :ctrl_c }
 
   catch :ctrl_c do
     while input = history
@@ -40,13 +41,13 @@ def main
         if line =~ /cd(?<dir>(\s(.*)+))/im
           change_dir($~[:dir].to_s.strip)
         else
-          command, args = line.split("\s")
+          command, *args = line.split("\s")
           # trigger command through native shell if not defined as a built-in
           Thread.new {
             if !CMDS.has_key?(command.to_sym)
               system line
             else
-              puts blank?(args) ? CMDS[command.to_sym]::() : CMDS[command.to_sym]::(args)
+              puts args.empty? ? CMDS[command.to_sym]::() : CMDS[command.to_sym]::(args)
             end unless blank?(line)
           }.join
           # changing prompt state to the current directory
@@ -117,24 +118,46 @@ _ = <<COWSAY
 COWSAY
 end
 
+# adds padding and highlighting to folders
+def ls
+  Dir['*'].map { |file| "%-5s %-5s" % [ \
+    ("\e[1;35m + #{file}\e[0m" if File.directory?(file)), \
+    (file if File.file?(file)) ] } 
+end
+
+# evaluates common mathematical expressions
+def calc(expr)
+  return eval(expr.gsub(/\[/,"(") \
+  .gsub(/\]/,")") \
+  .gsub(/(modulus|mod)/i,"%") \
+  .gsub(/(subtract|minus)/i,"-") \
+  .gsub(/(add|plus)/i,"+") \
+  .gsub(/(\^|power by)/i,"**") \
+  .gsub(/(×|∙|multiplied by)/i,"*") \
+  .gsub(/(divided by|÷)/i,"/") \
+  .gsub(/[^0-9\s\-\(\)^*+\/]/,"")) rescue return false
+end
+
 # Built-in commands
 CMDS = {
-  :mv      =>-> (*args) { file, loc = args; FileUtils.mv(file, loc) },
   :<       =>-> { CMDS[$buffer[-1].to_sym]::() unless $buffer[-1].empty? },
+  :mv      =>-> (*args) { file, loc = args; FileUtils.mv(file, loc) },
   :rm      =>-> (file) { FileUtils.rm_r(file, :verbose => true) },
-  :touch   =>-> (*files) { FileUtils.touch(files) },
+  :calc    =>-> (*expression) { calc(expression.join("\s")) },
   :mkdir   =>-> (folder = "new") { FileUtils.mkdir(folder) },
-  :cowsay  =>-> (*phrase) { cowsay(phrase.join("\s").to_s) },
   :clear   =>-> { system is_windows ? 'cls' : 'clear'; nil },
   :cd      =>-> (dir = ENV['HOME']) { Dir.chdir dir; nil },
+  :cowsay  =>-> (*phrase) { cowsay(phrase.join("\s")) },
+  :touch   =>-> (*files) { FileUtils.touch(files) },
   :date    =>-> { Time.now.strftime('%d/%m/%Y') },
   :exit    =>-> { $> << "bye (￣▽￣)ノ"; exit 0 },
+  :echo    =>-> (*str) { print str.join("\s") },
   :update  =>-> { `git pull origin master` },
   :cmds    =>-> { CMDS.keys*(?\s"\s") },
   :path    =>-> { ENV['Path'] },
   :history =>-> { $buffer*?\n },
-  :ls      =>-> { Dir['*'] },
-  :pwd     =>-> { Dir.pwd }
+  :pwd     =>-> { Dir.pwd },
+  :ls      =>-> { ls }
 }
 
 class String
