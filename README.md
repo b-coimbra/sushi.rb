@@ -22,6 +22,7 @@ Inspired by [shirt](https://github.com/jstorimer/shirt)
 - [ ] Package installer (maybe through [Chocolatey](https://chocolatey.org/))
 - [x] Directory and command autocompletion with TAB
 - [x] Command history with Up Arrow 
+- [ ] `screenfetch` command
 
 ### Preview
 
