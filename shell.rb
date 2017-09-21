@@ -5,6 +5,7 @@ $: << File.join(__dir__, 'C:\\cygwin\\bin')
 
 require 'fileutils'
 require 'readline'
+require 'win32ole'
 
 system "title rb-shell && cls"
 
@@ -17,7 +18,7 @@ define_method(:show_prompt_git?) { has_git? || $Prompt = $dir }
 $> << "\nwelcome back#{', '+ENV['COMPUTERNAME'].capitalize if is_windows}!\n"
 
 # prompt ansi codes
-BEGIN { trace_var :$Prompt, proc { |dir| $> << "\n\e[36m┌────── #{dir} \e[36m\e[0m\n\e[36m└────\e[0m " } }
+BEGIN { trace_var :$Prompt, proc { |dir| $> << "\n\e[36m┌──────── #{dir} \e[36m\e[0m\n\e[36m└────\e[0m " } }
 
 # tracing directory changes
 trace_var :$dir, proc { |loc| $dir = "\e[1;35m~/#{loc}\e[0m" }
@@ -28,7 +29,7 @@ def main
   # current directory
   $dir ||= __dir__.split(File::SEPARATOR)[-1]*?/
 
-  trap("SIGINT") { throw :ctrl_c }
+  trap("SIGINT") { show_prompt_git? }
 
   catch :ctrl_c do
     while input = history
@@ -120,6 +121,7 @@ end
 
 # adds padding and highlighting to folders
 def ls
+  print "\n"
   Dir['*'].map { |file| "%-5s %-5s" % [ \
     ("\e[1;35m + #{file}\e[0m" if File.directory?(file)), \
     (file if File.file?(file)) ] } 
@@ -127,15 +129,37 @@ end
 
 # evaluates common mathematical expressions
 def calc(expr)
-  return eval(expr.gsub(/\[/,"(") \
-  .gsub(/\]/,")") \
-  .gsub(/(modulus|mod)/i,"%") \
-  .gsub(/(subtract|minus)/i,"-") \
-  .gsub(/(add|plus)/i,"+") \
-  .gsub(/(\^|power by)/i,"**") \
-  .gsub(/(×|∙|multiplied by)/i,"*") \
-  .gsub(/(divided by|÷)/i,"/") \
-  .gsub(/[^0-9\s\-\(\)^*+\/]/,"")) rescue return false
+  return eval(expr \
+  .gsub(/\[/,'(') \
+  .gsub(/\]/,')') \
+  .gsub(/(add|plus)/i,'+') \
+  .gsub(/(modulus|mod)/i,'%') \
+  .gsub(/(subtract|minus)/i,'-') \
+  .gsub(/(\^|power by|pow)/i,'**') \
+  .gsub(/(divided by|div|÷)/i,'/') \
+  .gsub(/(×|∙|multiplied by|mult)/i,'*') \
+  .gsub(/[^0-9\s\-\(\)^*+\/]/,'')) rescue return false
+end
+
+def run(cmd)
+  (print 'Example: run google ruby programming'; return) if blank?(cmd)
+  shell = WIN32OLE.new("Wscript.Shell")
+  link, *keystrokes = cmd.split("\s")
+  link = "www.#{link}.com"
+  link =~ /www\.(.*)\.com/i
+  title = $1.capitalize
+  case RbConfig::CONFIG['host_os']
+  when /mswin|mingw|cygwin/im
+      system "start #{link}"
+  when /darwin/im
+      system "open #{link}"
+  when /linux|bsd/im
+      system "xdg-open #{link}"
+  end
+  sleep 4
+  (shell.Run(title); sleep 0.5) while !shell.AppActivate(title)
+  shell.SendKeys(keystrokes*?\s + "{ENTER}")
+  print "Sent: \e[31m#{keystrokes*?\s}\e[0m to: #{link}"
 end
 
 # Built-in commands
@@ -151,8 +175,9 @@ CMDS = {
   :touch   =>-> (*files) { FileUtils.touch(files) },
   :date    =>-> { Time.now.strftime('%d/%m/%Y') },
   :exit    =>-> { $> << "bye (￣▽￣)ノ"; exit 0 },
-  :echo    =>-> (*str) { print str.join("\s") },
+  :echo    =>-> (*str) { print str*?\s },
   :update  =>-> { `git pull origin master` },
+  :run     =>-> (*args) { run(args*?\s) },
   :cmds    =>-> { CMDS.keys*(?\s"\s") },
   :path    =>-> { ENV['Path'] },
   :history =>-> { $buffer*?\n },

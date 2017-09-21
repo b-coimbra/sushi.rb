@@ -50,6 +50,10 @@ CMDS = {
     -> { `git pull origin master` },
     :description => "updates shell"
   ],
+  :run     => [
+    -> (*args) { run(args*?\s) },
+    :description => "opens website through active browser, then types something"
+  ],
   :cmds    => [
     -> { CMDS.keys*(?\s"\s") },
     :description => "shows all commands"
