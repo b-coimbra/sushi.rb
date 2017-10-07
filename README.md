@@ -1,5 +1,7 @@
 # rb-shell
 
+![rb-shell](https://s1.postimg.org/58vzwgp8zz/rb-shell.png)
+
 Custom prompt with unix features written in Ruby.
 
 Inspired by [shirt](https://github.com/jstorimer/shirt)
