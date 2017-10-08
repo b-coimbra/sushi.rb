@@ -23,12 +23,13 @@ Inspired by [shirt](https://github.com/jstorimer/shirt)
 - [x] Command stacking (eg `cd documents && ls`)
 - [ ] Package installer (maybe through [Chocolatey](https://chocolatey.org/))
 - [x] Directory and command autocompletion with TAB
-- [x] Command history with Up Arrow 
+- [x] Command history with Up Arrow
 - [ ] `screenfetch` command
+- [x] shell scripting with interactive ruby / python
 
 ### Preview
 
-![preview](https://i.imgur.com/T933Vu1.png)
+![preview](https://i.imgur.com/7Wnfdg3.gif)
 
 ### Contributing
 Bug fixes and pull requests are welcome.
