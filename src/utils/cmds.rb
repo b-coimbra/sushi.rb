@@ -7,7 +7,7 @@ CMDS = {
     :description => "moves file to another directory"
   ],
   :<       => [
-    -> { CMDS[$buffer[-1].to_sym]::() unless $buffer[-1].empty? },
+    -> { CMDS[$buffer[-1].to_sym][0]::() unless $buffer[-1].empty? },
     :description => "executes the last command"
   ],
   :rm      => [
@@ -42,6 +42,10 @@ CMDS = {
     -> { $> << "bye (￣▽￣)ノ"; exit 0 },
     :description => "exit shell"
   ],
+  :>       => [
+    -> (*args) { rb_exec(args*?\s) },
+    :description => "interactive ruby"
+  ],
   :echo    => [
     -> (*str) { print str.join("\s") },
     :description => "prints text to shell"
@@ -55,8 +59,12 @@ CMDS = {
     :description => "opens website through active browser, then types something"
   ],
   :cmds    => [
-    -> { CMDS.keys*(?\s"\s") },
+    -> { CMDS.keys.sort_by(&:downcase)*(?\s"| ").yellow },
     :description => "shows all commands"
+  ],
+  :colortest => [
+    -> { colortest; nil },
+    :description => "shows available colors"
   ],
   :path    => [
     -> { ENV['Path'] },

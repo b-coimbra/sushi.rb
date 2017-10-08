@@ -6,13 +6,9 @@ require_relative 'git'
 require_relative 'cd'
 require_relative 'history'
 require_relative 'autocomplete'
+require_relative 'methods'
 
-define_method(:is_windows) { !RUBY_PLATFORM[/linux|darwin|mac|solaris|bsd/im] }
-
-define_method(:blank?) { |i| i.nil? || i.empty? || i[/^[\r|\t|\s]+$/m] }
-
-define_method(:show_prompt_git?) { has_git? || $Prompt = $dir }
-
+# traces current directory
 trace_var :$dir, proc { |loc| $dir = "~/#{loc}".magenta }
 
 $> << "\nwelcome back#{', '+ENV['COMPUTERNAME'].capitalize if is_windows}! \n"
@@ -41,12 +37,12 @@ class Core
             # trigger command through native shell if not defined as a built-in
             Thread.new {
               if !CMDS.has_key?(command.to_sym)
-                system line
+                puts "'#{line}' command does not exist.".red if !system line
               else
                 puts args.empty? ? CMDS[command.to_sym][0]::() : CMDS[command.to_sym][0]::(args)
               end unless blank?(line)
             }.join
-            # changing prompt state to the current directory
+            # changes prompt state to the current directory
             show_prompt_git?
           end
           $buffer << line

@@ -5,11 +5,49 @@ $: << File.join(__dir__, 'C:\\cygwin\\bin')
 
 require 'fileutils'
 require 'readline'
-require 'win32ole'
 
 system "title rb-shell && cls"
 
+class String
+  { :reset          =>  0,
+    :bold           =>  1,
+    :dark           =>  2,
+    :underline      =>  4,
+    :blink          =>  5,
+    :negative       =>  7,
+    :black          => 30,
+    :red            => 31,
+    :green          => 32,
+    :yellow         => 33,
+    :blue           => 34,
+    :magenta        => '1;35',
+    :cyan           => 36,
+    :white          => 37,
+  }.each do |color, value|
+    define_method color do
+      "\e[#{value}m" + self + "\e[0m"
+    end
+  end
+end
+
+class String
+  define_method(:format) { |*args| self.tr('{}', '%s') % args }
+end
+
+module Kernel
+  alias_method :__init__, :initialize
+  alias_method :import, :require
+end
+
+define_method(:input) { |str| print str; gets.to_s }
+define_method(:len)   { |obj| obj.length }
+define_method(:int)   { |num| num.to_i }
+define_method(:str)   { |int| int.to_i }
+define_method(:range) { |num| (0..num) }
+
 define_method(:is_windows) { !RUBY_PLATFORM[/linux|darwin|mac|solaris|bsd/im] }
+
+define_method(:connected?) { return (!!`ping 192.168.1.1`) rescue false }
 
 define_method(:blank?) { |i| i.nil? || i.empty? || i[/^[\r|\t|\s]+$/m] }
 
@@ -21,7 +59,7 @@ $> << "\nwelcome back#{', '+ENV['COMPUTERNAME'].capitalize if is_windows}!\n"
 BEGIN { trace_var :$Prompt, proc { |dir| $> << "\n\e[36m┌──────── #{dir} \e[36m\e[0m\n\e[36m└────\e[0m " } }
 
 # tracing directory changes
-trace_var :$dir, proc { |loc| $dir = "\e[1;35m~/#{loc}\e[0m" }
+trace_var :$dir, proc { |loc| $dir = "~/#{loc}".magenta }
 
 $buffer = []
 
@@ -46,7 +84,7 @@ def main
           # trigger command through native shell if not defined as a built-in
           Thread.new {
             if !CMDS.has_key?(command.to_sym)
-              system line
+              puts "'#{line}' command does not exist.".red if !system line
             else
               puts args.empty? ? CMDS[command.to_sym]::() : CMDS[command.to_sym]::(args)
             end unless blank?(line)
@@ -77,11 +115,11 @@ end
 
 def change_dir(dir)
   if !test ?e, dir
-    $> << "\e[31mNo folder named '#{dir}' in this directory!\e[0m\n"
+    $> << "No folder named '#{dir}' in this directory!\n".red
     !has_git? && $Prompt = $dir 
   else
     CMDS[:cd]::(dir)
-    has_git? || $Prompt = "\e[1;35m#$dir\e[0m"
+    has_git? || $Prompt = "#$dir".magenta
   end
 end
 
@@ -107,6 +145,7 @@ def help
 end
 
 def cowsay(sentence)
+print "\n"
 _ = <<COWSAY
  _#{'_'*sentence.length}_
 < #{sentence} >
@@ -122,9 +161,9 @@ end
 # adds padding and highlighting to folders
 def ls
   print "\n"
-  Dir['*'].map { |file| "%-5s %-5s" % [ \
-    ("\e[1;35m + #{file}\e[0m" if File.directory?(file)), \
-    (file if File.file?(file)) ] } 
+  Dir['*'].map { |file| "│ %-1s %s".cyan % [ \
+    ("\r├──" + " #{file}".magenta if File.directory?(file)), \
+    ("+ \e[0m#{file}" if File.file?(file)) ] }
 end
 
 # evaluates common mathematical expressions
@@ -142,6 +181,7 @@ def calc(expr)
 end
 
 def run(cmd)
+  require 'win32ole'
   (print 'Example: run google ruby programming'; return) if blank?(cmd)
   shell = WIN32OLE.new("Wscript.Shell")
   link, *keystrokes = cmd.split("\s")
@@ -150,7 +190,7 @@ def run(cmd)
   title = $1.capitalize
   case RbConfig::CONFIG['host_os']
   when /mswin|mingw|cygwin/im
-      system "start #{link}"
+      system "start chrome #{link}"
   when /darwin/im
       system "open #{link}"
   when /linux|bsd/im
@@ -162,27 +202,60 @@ def run(cmd)
   print "Sent: \e[31m#{keystrokes*?\s}\e[0m to: #{link}"
 end
 
+def colortest
+  print "\n"
+  names   = %w(black red green yellow blue pink cyan white default)
+  fgcodes = (30..39).to_a - [38]
+  reg     = "\e[%d;%dm%s\e[0m"
+  bold    = "\e[1;%d;%dm%s\e[0m"
+  row     = '          40       41       42       43       44       45       46       47       49'
+  title   = 'COLORS AVAILABLE'
+
+  puts title.rjust((row.length + title.length) / 2); puts row
+
+  names.zip(fgcodes).each do |name, fg|
+    s = fg
+    puts "%7s "%name + "#{reg}  #{bold}   " * 9 % [fg,40,s,fg,40,s, fg,41,s,fg,41,s, fg,42,s,fg,42,s, fg,43,s,fg,43,s,  
+      fg,44,s,fg,44,s, fg,45,s,fg,45,s, fg,46,s,fg,46,s, fg,47,s,fg,47,s, fg,49,s,fg,49,s]
+  end
+end
+
+def rb_exec(*cmds)
+  cmds = cmds*?\s
+  if !blank?(cmds)
+    begin
+      return eval cmds
+    rescue SyntaxError => e
+      print e
+    end
+  else
+    puts "example: > puts 'hello'.red"
+  end
+end
+
 # Built-in commands
 CMDS = {
-  :<       =>-> { CMDS[$buffer[-1].to_sym]::() unless $buffer[-1].empty? },
-  :mv      =>-> (*args) { file, loc = args; FileUtils.mv(file, loc) },
-  :rm      =>-> (file) { FileUtils.rm_r(file, :verbose => true) },
-  :calc    =>-> (*expression) { calc(expression.join("\s")) },
-  :mkdir   =>-> (folder = "new") { FileUtils.mkdir(folder) },
-  :clear   =>-> { system is_windows ? 'cls' : 'clear'; nil },
-  :cd      =>-> (dir = ENV['HOME']) { Dir.chdir dir; nil },
-  :cowsay  =>-> (*phrase) { cowsay(phrase.join("\s")) },
-  :touch   =>-> (*files) { FileUtils.touch(files) },
-  :date    =>-> { Time.now.strftime('%d/%m/%Y') },
-  :exit    =>-> { $> << "bye (￣▽￣)ノ"; exit 0 },
-  :echo    =>-> (*str) { print str*?\s },
-  :update  =>-> { `git pull origin master` },
-  :run     =>-> (*args) { run(args*?\s) },
-  :cmds    =>-> { CMDS.keys*(?\s"\s") },
-  :path    =>-> { ENV['Path'] },
-  :history =>-> { $buffer*?\n },
-  :pwd     =>-> { Dir.pwd },
-  :ls      =>-> { ls }
+  :<         =>-> { CMDS[$buffer[-1].to_sym]::() unless $buffer[-1].empty? },
+  :mv        =>-> (*args) { file, loc = args; FileUtils.mv(file, loc) },
+  :cmds      =>-> { CMDS.keys.sort_by(&:downcase)*(?\s"| ").yellow },
+  :rm        =>-> (file) { FileUtils.rm_r(file, :verbose => true) },
+  :calc      =>-> (*expression) { calc(expression.join("\s")) },
+  :mkdir     =>-> (folder = "new") { FileUtils.mkdir(folder) },
+  :clear     =>-> { system is_windows ? 'cls' : 'clear'; nil },
+  :cd        =>-> (dir = ENV['HOME']) { Dir.chdir dir; nil },
+  :cowsay    =>-> (*phrase) { cowsay(phrase.join("\s")) },
+  :touch     =>-> (*files) { FileUtils.touch(files) },
+  :date      =>-> { Time.now.strftime('%d/%m/%Y') },
+  :exit      =>-> { $> << "bye (￣▽￣)ノ"; exit 0 },
+  :>         =>-> (*args) { rb_exec(args); nil },
+  :update    =>-> { `git pull origin master` },
+  :run       =>-> (*args) { run(args*?\s) },
+  :echo      =>-> (*str) { print str*?\s },
+  :colortest =>-> { colortest; nil },
+  :path      =>-> { ENV['Path'] },
+  :history   =>-> { $buffer*?\n },
+  :pwd       =>-> { Dir.pwd },
+  :ls        =>-> { ls }
 }
 
 class String
@@ -195,8 +268,8 @@ end
 's'   .alias 'subl .'
 'e'   .alias 'emacs -nw'
 'o'   .alias 'explorer .'
-'off' .alias 'shutdown -s -f -t 0'
 'att' .alias 'sudo apt-get update'
+# 'off' .alias 'shutdown -s -f -t 0'
 
 case $*[0]
 when /(\-+|h)+/i then help # --help flag

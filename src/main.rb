@@ -9,7 +9,7 @@ system 'title rb-shell && cls'
 Dir[File.join(__dir__, %w[utils], '*.rb')].map(&method(:require))
 
 # PROMPT
-BEGIN { trace_var :$Prompt, proc { |dir| $> << "\n\e[33m┌─────┄┄ #{dir} \n\e[33m└──┄\e[0m " } }
+BEGIN { trace_var :$Prompt, proc { |dir| $> << "\n\e[36m┌──────── #{dir} \e[36m\e[0m\n\e[36m└────\e[0m " } }
 
 case ARGV[0]
 when /(\-+|h)+/i then help # --help flag
