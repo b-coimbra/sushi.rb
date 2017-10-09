@@ -10,9 +10,9 @@ class String
     :green          => 32,
     :yellow         => 33,
     :blue           => 34,
-    :magenta        => '1;35',
     :cyan           => 36,
     :white          => 37,
+    :magenta        => '1;35'
   }.each do |color, value|
     define_method color do
       "\e[#{value}m" + self + "\e[0m"

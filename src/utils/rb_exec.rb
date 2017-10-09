@@ -2,7 +2,16 @@ def rb_exec(*cmds)
   cmds = cmds*?\s
   if !blank?(cmds)
     begin
-      return eval cmds
+      return eval cmds. \
+      gsub(/try/im, 'begin'). \
+      gsub(/finally/im, 'ensure'). \
+      gsub(/\:(.*)/m, '; \1; end'). \
+      gsub(/while True/im, 'loop do'). \
+      gsub(/except\s(.*)/im, 'rescue \1'). \
+      gsub(/import\s(\w+)/im, "require '\\1'"). \
+      gsub(/for\s(.*)\sin\s(.*)\:\n\s(.*)/im, '\2.map { |\1| \3 }'). \
+      gsub(/([if|else|elif|def|while|with|class|for]+\s.*?)\:/im, '\1;'). \
+      gsub(/(if)\s__name__\s==\s'__main__'/im, '\1 __FILE__ == $0')
     rescue SyntaxError => e
       print e
     end
