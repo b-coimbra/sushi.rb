@@ -1,3 +1,4 @@
+require 'fileutils'
 # -*- coding: utf-8 -*-
 
 ### Built-in commands
@@ -15,7 +16,7 @@ CMDS = {
     :description => "removes file"
   ],
   :touch   => [
-    -> (*files) { FileUtils.touch(files.split("\s")) },
+    -> (*files) { FileUtils.touch(files) },
     :description => "creates file"
   ],
   :mkdir   => [

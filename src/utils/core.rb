@@ -53,7 +53,7 @@ class Core
           end
           $buffer << line
         end
-      end rescue NoMethodError puts "unknown command".red
+      end rescue NoMethodError puts("[error] Couldn't execute command.".red), main
     end
   end
 end

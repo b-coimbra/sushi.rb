@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
 require 'readline'
-require 'fileutils'
 
 system 'title rb-shell && cls'
 
