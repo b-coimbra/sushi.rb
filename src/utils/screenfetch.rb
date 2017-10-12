@@ -7,7 +7,7 @@ def screenfetch
          ,aP"  Yb_,dP"   "Yba, ,adP"   "Yb,_dP  "Ya,            
        ,aP"    _88"         )888(         "88_    "Ya,          OS: #{RUBY_PLATFORM}
      ,aP"   _,dP"Yb      ,adP"8"Yba,      dP"Yb,_   "Ya,        Resolution: #{rows} x #{columns}
-   ,aPYb _,dP8    Yb  ,adP"   8   "Yba,  dP    8Yb,_ dPYa,      Shell: #{$0}
+   ,aPYb _,dP8    Yb  ,adP"   8   "Yba,  dP    8Yb,_ dPYa,      Shell: rb-shell
  ,aP"  YdP" dP     YbdP"      8      "YbdP     Yb "YbP  "Ya,
 I8aaaaaa8aaa8baaaaaa88aaaaaaaa8aaaaaaaa88aaaaaad8aaa8aaaaaa8I
 `Yb,   d8a, Ya      d8b,      8      ,d8b      aP ,a8b   ,dP'

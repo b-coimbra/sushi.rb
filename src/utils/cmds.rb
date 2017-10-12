@@ -4,7 +4,7 @@ require 'fileutils'
 ### Built-in commands
 CMDS = {
   :mv      => [
-    -> (args) { file, loc = args.split("\s"); FileUtils.mv(file, loc) },
+    -> (args) { file, loc = args; FileUtils.mv(file, loc); nil },
     :description => "moves file to another directory"
   ],
   :<       => [

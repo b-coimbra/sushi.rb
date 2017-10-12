@@ -1,6 +1,6 @@
 def help
   print %{
-    shell-rb is a custom shell with unix features written in Ruby.
+    rb-shell is a custom shell with unix features written in Ruby.
 
     Type any command into the terminal, or write your own, that's it!
 
