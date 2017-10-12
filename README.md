@@ -1,6 +1,6 @@
-# shell.rb
+# sushi.rb
 
-![shell.rb](https://s1.postimg.org/58vzwgp8zz/rb-shell.png)
+![sushi.rb](https://s1.postimg.org/58vzwgp8zz/rb-shell.png)
 
 Custom prompt with unix features written in Ruby.
 
