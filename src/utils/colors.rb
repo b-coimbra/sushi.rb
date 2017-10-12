@@ -6,12 +6,12 @@ class String
     :blink          =>  5,
     :negative       =>  7,
     :black          => 30,
-    :red            => '1;31',
     :green          => 32,
     :yellow         => 33,
     :blue           => 34,
     :cyan           => 36,
     :white          => 37,
+    :red            => '1;31',
     :magenta        => '1;35'
   }.each do |color, value|
     define_method color do
