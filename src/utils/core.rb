@@ -43,9 +43,16 @@ class Core
             # trigger command through native shell if not defined as a built-in
             Thread.new {
               if !CMDS.has_key?(command.to_sym)
-                puts "'#{line}' command does not exist.".red if !system line
+                handle_error "Command '#{line}' not found." if !system line
               else
-                puts args.empty? ? CMDS[command.to_sym][0]::() : CMDS[command.to_sym][0]::(args)
+                begin
+                  puts args.empty? ? CMDS[command.to_sym][0]::() : CMDS[command.to_sym][0]::(args)
+                rescue ArgumentError
+                  handle_error "#{command}: No parameters found."
+                rescue NoMethodError, Errno::ENOENT, TypeError => e
+                  # fetch error message from current command
+                  handle_error "#{command}: " + CMDS[command.to_sym][1].values[1]
+                end
               end unless blank?(line)
             }.join
             # changes prompt state to the current directory
@@ -53,7 +60,7 @@ class Core
           end
           $buffer << line
         end
-      end rescue NoMethodError puts("[error] Couldn't execute command.".red), main
+      end 
     end
   end
 end

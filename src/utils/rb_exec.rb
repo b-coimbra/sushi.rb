@@ -21,7 +21,7 @@ def rb_exec(*cmds)
       gsub(/for\s(.*)\sin\s(.*)\:\n\s(.*)/im, '\2.map { |\1| \3 }'). \
       gsub(/([if|else|elif|def|while|with|class|for]+\s.*?)\:/im, '\1;'). \
       gsub(/(if)\s__name__\s==\s'__main__'/im, '\1 __FILE__ == $0')
-    rescue SyntaxError => e
+    rescue ScriptError => e
       print e
     end
   else

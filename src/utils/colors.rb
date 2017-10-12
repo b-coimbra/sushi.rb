@@ -12,10 +12,20 @@ class String
     :cyan           => 36,
     :white          => 37,
     :red            => '1;31',
-    :magenta        => '1;35'
+    :magenta        => '1;35',
+
+    :bg_black       => 40,
+    :bg_red         => 41,
+    :bg_green       => 42,
+    :bg_brown       => 43,
+    :bg_blue        => 44,
+    :bg_magenta     => 45,
+    :bg_cyan        => 46,
+    :bg_gray        => 47
   }.each do |color, value|
     define_method color do
       "\e[#{value}m" + self + "\e[0m"
     end
   end
 end
+

@@ -20,3 +20,5 @@ define_method(:connected?) { return (!!`ping 192.168.1.1`) rescue false }
 define_method(:blank?) { |i| i.nil? || i.empty? || i[/^[\r|\t|\s]+$/m] }
 
 define_method(:show_prompt_git?) { has_git? || $Prompt = $dir }
+
+define_method(:handle_error) { |msg='Invalid syntax / argument.'| puts msg.red; show_prompt_git?; Core::new.main }
