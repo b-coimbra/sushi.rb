@@ -9,14 +9,16 @@ Inspired by [shirt](https://github.com/jstorimer/shirt)
 ### Usage
 
 - Clone this repo, or download it into a directory of your choice.
-- Open the `bin` folder and run the `shell.exe`, or go into `src/` and run `$ ruby main.rb`
+- Using the [rake gem](https://github.com/ruby/rake), type `$ rake run` to start the shell
+  - Or go into `src/` and run `$ ruby main.rb`
 - Type `cmds` to get a full list of the commands and aliases.
-- To integrate with Cmder (or ConEmu), open the settings and go to `Startup > Tasks` and paste the location to `C:\<your-location>\shell.exe`
+- To integrate with Cmder (or ConEmu), open the settings and go to `Startup > Tasks` and paste the location to `C:\<path-to-executable>\shell.exe`
 
 ### Building
 
 - Install the [OCRA](https://github.com/larsch/ocra) gem with `$ gem install ocra`
-- Type `$ ocra src --output shell.exe` in the root directory to build it.
+- Type `$ rake build` in the root directory to build an executable file.
+- The executable file can be found in the `bin` folder.
 
 ### To do
 - [x] Add command-line extensions (or import them from cygwin)
