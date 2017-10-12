@@ -11,7 +11,13 @@ require_relative 'methods'
 # traces current directory
 trace_var :$dir, proc { |loc| $dir = "~/#{loc}".magenta }
 
-$> << "\nwelcome back#{', '+ENV['COMPUTERNAME'].capitalize if is_windows}! \n"
+$> << %{
+  .     '     ,
+    _________
+ _ /_|_____|_\\ _
+   '. \\   / .' 
+     '.\\ /.'
+       '.'\n}.red
 
 class Core
   $buffer = []
@@ -47,7 +53,7 @@ class Core
           end
           $buffer << line
         end
-      end rescue NoMethodError abort "unknown command", main
+      end rescue NoMethodError puts "unknown command".red
     end
   end
 end

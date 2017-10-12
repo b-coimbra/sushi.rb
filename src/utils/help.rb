@@ -1,10 +1,11 @@
 def help
   print %{
-    Usage: ruby shell.rb (or run the executable)
+    shell-rb is a custom shell with unix features written in Ruby.
 
-    Type any command into the terminal, use < to run the previous command, that's it!
+    Type any command into the terminal, or write your own, that's it!
 
-    COMMANDS AVAILABLE:
-    #{CMDS.keys.sort_by(&:downcase)*(?\s"| ").yellow}
-  }; exit 0
+    COMMANDS AVAILABLE:\n\n}
+  CMDS.collect { |key, val| puts "%-20s %s" % [key.to_s.cyan, val[1].to_s.gsub(/\{\:description\=\>|\"|\}/m,'')] }
+  puts "\nPress [ENTER] to continue...".cyan
+  Core::new.main
 end

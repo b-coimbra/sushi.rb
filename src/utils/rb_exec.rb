@@ -1,8 +1,17 @@
+# evaluates ruby/python expressions
 def rb_exec(*cmds)
   cmds = cmds*?\s
   if !blank?(cmds)
     begin
       return eval cmds. \
+      gsub(/\[/,"("). \
+      gsub(/\]/,")"). \
+      gsub(/(modulus|mod)/i,"%"). \
+      gsub(/(subtract|minus)/i,"-"). \
+      gsub(/(add|plus)/i,"+"). \
+      gsub(/(\^|power by)/i,"**"). \
+      gsub(/(divided by|÷)/i,"/"). \
+      gsub(/(×|∙|multiplied by)/i,"*"). \
       gsub(/try/im, 'begin'). \
       gsub(/finally/im, 'ensure'). \
       gsub(/\:(.*)/m, '; \1; end'). \

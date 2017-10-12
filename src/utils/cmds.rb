@@ -14,10 +14,6 @@ CMDS = {
     -> (file) { FileUtils.rm_r(file, :verbose => true) },
     :description => "removes file"
   ],
-  :calc    => [
-    -> (*expression) { calc(expression.join("\s")) },
-    :description => "calculator"
-  ],
   :touch   => [
     -> (*files) { FileUtils.touch(files.split("\s")) },
     :description => "creates file"
@@ -28,7 +24,7 @@ CMDS = {
   ],
   :clear   => [
     -> { system is_windows ? 'cls' : 'clear'; nil },
-    :description => "clears the buffer"
+    :description => "clears the shell"
   ],
   :cd      => [
     -> (dir = ENV['HOME']) { Dir.chdir dir; nil },
@@ -44,7 +40,7 @@ CMDS = {
   ],
   :>       => [
     -> (*args) { rb_exec(args*?\s) },
-    :description => "interactive ruby"
+    :description => "evaluates ruby/python expressions"
   ],
   :echo    => [
     -> (*str) { print str.join("\s") },
@@ -59,7 +55,7 @@ CMDS = {
     :description => "opens website through active browser, then types something"
   ],
   :cmds    => [
-    -> { CMDS.keys.sort_by(&:downcase)*(?\s"| ").yellow },
+    -> { CMDS.collect { |key, val| "%-20s %s" % [key.to_s.cyan, val[1].to_s.gsub(/\{\:description\=\>|\"|\}/m,'')] }.sort_by(&:downcase) },
     :description => "shows all commands"
   ],
   :colortest => [
@@ -68,15 +64,15 @@ CMDS = {
   ],
   :path    => [
     -> { ENV['Path'] },
-    :description => "environment variables"
+    :description => "shows the environment variables"
   ],
   :cowsay  => [
     -> (*phrase) { cowsay(phrase.join("\s").to_s) },
-    :description => "cowsay command"
+    :description => "shows an ascii cow saying whatever. eg: cowsay hehe!"
   ],
   :history => [
     -> { $buffer*?\n },
-    :description => "command history"
+    :description => "shows history of commands"
   ],
   :ls      => [
     -> { ls },
@@ -84,6 +80,14 @@ CMDS = {
   ],
   :pwd     => [
     -> { Dir.pwd },
-    :desciption => "current working directory"
+    :description => "returns the current working directory"
+  ],
+  :help    => [
+    -> { help },
+    :description => "shows this help"
+  ],
+  :screenfetch => [
+    -> { screenfetch },
+    :description => "shows system information"
   ]
 }

@@ -5,6 +5,7 @@ $: << File.join(__dir__, 'C:\\cygwin\\bin')
 
 require 'fileutils'
 require 'readline'
+require 'io/console'
 
 system "title rb-shell && cls"
 
@@ -53,7 +54,13 @@ define_method(:blank?) { |i| i.nil? || i.empty? || i[/^[\r|\t|\s]+$/m] }
 
 define_method(:show_prompt_git?) { has_git? || $Prompt = $dir }
 
-$> << "\nwelcome back#{', '+ENV['COMPUTERNAME'].capitalize if is_windows}!\n"
+$> << %{
+  .     '     ,
+    _________
+ _ /_|_____|_\\ _
+   '. \\   / .' 
+     '.\\ /.'
+       '.'\n}.red
 
 # prompt ansi codes
 BEGIN { trace_var :$Prompt, proc { |dir| $> << "\n\e[36m┌──────── #{dir} \e[36m\e[0m\n\e[36m└────\e[0m " } }
@@ -166,20 +173,6 @@ def ls
     ("+ \e[0m#{file}" if File.file?(file)) ] }
 end
 
-# evaluates common mathematical expressions
-def calc(expr)
-  return eval(expr \
-  .gsub(/\[/,'(') \
-  .gsub(/\]/,')') \
-  .gsub(/(add|plus)/i,'+') \
-  .gsub(/(modulus|mod)/i,'%') \
-  .gsub(/(subtract|minus)/i,'-') \
-  .gsub(/(\^|power by|pow)/i,'**') \
-  .gsub(/(divided by|div|÷)/i,'/') \
-  .gsub(/(×|∙|multiplied by|mult)/i,'*') \
-  .gsub(/[^0-9\s\-\(\)^*+\/]/,'')) rescue return false
-end
-
 def run(cmd)
   require 'win32ole'
   (print 'Example: run google ruby programming'; return) if blank?(cmd)
@@ -220,11 +213,20 @@ def colortest
   end
 end
 
+# evaluates ruby expressions
 def rb_exec(*cmds)
   cmds = cmds*?\s
   if !blank?(cmds)
     begin
       return eval cmds. \
+        gsub(/\[/,"("). \
+        gsub(/\]/,")"). \
+        gsub(/(modulus|mod)/i,"%"). \
+        gsub(/(subtract|minus)/i,"-"). \
+        gsub(/(add|plus)/i,"+"). \
+        gsub(/(\^|power by)/i,"**"). \
+        gsub(/(×|∙|multiplied by)/i,"*"). \
+        gsub(/(divided by|÷)/i,"/"). \
         gsub(/try/im, 'begin'). \
         gsub(/finally/im, 'ensure'). \
         gsub(/\:(.*)/m, '; \1; end'). \
@@ -242,29 +244,58 @@ def rb_exec(*cmds)
   end
 end
 
+def screenfetch
+  rows, columns = $stdout.winsize
+  print %{
+             ,gaaaaaaaagaaaaaaaaaaaaagaaaaaaaag,
+           ,aP8b    _,dYba,       ,adPb,_    d8Ya,              @#{ENV['COMPUTERNAME'].capitalize}
+         ,aP"  Yb_,dP"   "Yba, ,adP"   "Yb,_dP  "Ya,            
+       ,aP"    _88"         )888(         "88_    "Ya,          OS: #{RUBY_PLATFORM}
+     ,aP"   _,dP"Yb      ,adP"8"Yba,      dP"Yb,_   "Ya,        Resolution: #{rows} x #{columns}
+   ,aPYb _,dP8    Yb  ,adP"   8   "Yba,  dP    8Yb,_ dPYa,      Shell: #{$0}
+ ,aP"  YdP" dP     YbdP"      8      "YbdP     Yb "YbP  "Ya,
+I8aaaaaa8aaa8baaaaaa88aaaaaaaa8aaaaaaaa88aaaaaad8aaa8aaaaaa8I
+`Yb,   d8a, Ya      d8b,      8      ,d8b      aP ,a8b   ,dP'
+  "Yb,dP "Ya "8,   dI "Yb,    8    ,dP" Ib   ,8" aP" Yb,dP"
+    "Y8,   "YaI8, ,8'   "Yb,  8  ,dP"   `8, ,8IaP"   ,8P"
+      "Yb,   `"Y8ad'      "Yb,8,dP"      `ba8P"'   ,dP"
+        "Yb,    `"8,        "Y8P"        ,8"'    ,dP"
+          "Yb,    `8,         8         ,8'    ,dP"
+            "Yb,   `Ya        8        aP'   ,dP"
+              "Yb,   "8,      8      ,8"   ,dP"
+                "Yb,  `8,     8     ,8'  ,dP"
+                  "Yb, `Ya    8    aP' ,dP"
+                    "Yb, "8,  8  ,8" ,dP"
+                      "Yb,`8, 8 ,8',dP"
+                        "Yb,Ya8aP,dP"
+                          "Y88888P"
+                            "Y8P"
+                              "}.red
+end
+
 # Built-in commands
 CMDS = {
-  :<         =>-> { CMDS[$buffer[-1].to_sym]::() unless $buffer[-1].empty? },
-  :mv        =>-> (*args) { file, loc = args; FileUtils.mv(file, loc) },
-  :cmds      =>-> { CMDS.keys.sort_by(&:downcase)*(?\s"| ").yellow },
-  :rm        =>-> (file) { FileUtils.rm_r(file, :verbose => true) },
-  :calc      =>-> (*expression) { calc(expression.join("\s")) },
-  :mkdir     =>-> (folder = "new") { FileUtils.mkdir(folder) },
-  :clear     =>-> { system is_windows ? 'cls' : 'clear'; nil },
-  :cd        =>-> (dir = ENV['HOME']) { Dir.chdir dir; nil },
-  :cowsay    =>-> (*phrase) { cowsay(phrase.join("\s")) },
-  :touch     =>-> (*files) { FileUtils.touch(files) },
-  :date      =>-> { Time.now.strftime('%d/%m/%Y') },
-  :exit      =>-> { $> << "bye (￣▽￣)ノ"; exit 0 },
-  :>         =>-> (*args) { rb_exec(args); nil },
-  :update    =>-> { `git pull origin master` },
-  :run       =>-> (*args) { run(args*?\s) },
-  :echo      =>-> (*str) { print str*?\s },
-  :colortest =>-> { colortest; nil },
-  :path      =>-> { ENV['Path'] },
-  :history   =>-> { $buffer*?\n },
-  :pwd       =>-> { Dir.pwd },
-  :ls        =>-> { ls }
+  :<          =>-> { CMDS[$buffer[-1].to_sym]::() unless $buffer[-1].empty? },
+  :mv          =>-> (*args) { file, loc = args; FileUtils.mv(file, loc) },
+  :cmds        =>-> { CMDS.keys.sort_by(&:downcase)*(?\s"| ").yellow },
+  :rm          =>-> (file) { FileUtils.rm_r(file, :verbose => true) },
+  :mkdir       =>-> (folder = "new") { FileUtils.mkdir(folder) },
+  :clear       =>-> { system is_windows ? 'cls' : 'clear'; nil },
+  :cd          =>-> (dir = ENV['HOME']) { Dir.chdir dir; nil },
+  :cowsay      =>-> (*phrase) { cowsay(phrase.join("\s")) },
+  :touch       =>-> (*files) { FileUtils.touch(files) },
+  :date        =>-> { Time.now.strftime('%d/%m/%Y') },
+  :exit        =>-> { $> << "bye (￣▽￣)ノ"; exit 0 },
+  :>           =>-> (*args) { rb_exec(args); nil },
+  :update      =>-> { `git pull origin master` },
+  :run         =>-> (*args) { run(args*?\s) },
+  :echo        =>-> (*str) { print str*?\s },
+  :colortest   =>-> { colortest; nil },
+  :screenfetch =>-> { screenfetch },
+  :path        =>-> { ENV['Path'] },
+  :history     =>-> { $buffer*?\n },
+  :pwd         =>-> { Dir.pwd },
+  :ls          =>-> { ls }
 }
 
 class String

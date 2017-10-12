@@ -6,7 +6,7 @@ class String
     :blink          =>  5,
     :negative       =>  7,
     :black          => 30,
-    :red            => 31,
+    :red            => '1;31',
     :green          => 32,
     :yellow         => 33,
     :blue           => 34,
