@@ -13,7 +13,6 @@ class String
     :white          => 37,
     :red            => '1;31',
     :magenta        => '1;35',
-
     :bg_black       => 40,
     :bg_red         => 41,
     :bg_green       => 42,

@@ -2,7 +2,7 @@
 # encoding: UTF-8
 require 'readline'
 
-system 'title rb-shell && cls'
+system 'title sushi && cls'
 
 # loads all packages
 Dir[File.join(__dir__, %w[utils], '*.rb')].map(&method(:require))

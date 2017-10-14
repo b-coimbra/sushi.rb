@@ -1,8 +1,8 @@
 def help
   print %{
-    rb-shell is a custom shell with unix features written in Ruby.
+    sushi.rb (Simple Unix Shell in Ruby) is a custom shell with unix features written in Ruby.
 
-    Type any command into the terminal, or write your own, that's it!
+    Just type any command into the terminal, or write your own, that's it!
 
     COMMANDS AVAILABLE:\n\n}
   CMDS.collect { |key, val| puts "%-20s %s" % [key.to_s.cyan, val[1].values[0]] }

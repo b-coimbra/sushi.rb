@@ -43,22 +43,31 @@ class Core
             # trigger command through native shell if not defined as a built-in
             Thread.new {
               if !CMDS.has_key?(command.to_sym)
-                handle_error "Command '#{line}' not found." if !system line
+                if !system line
+                  approx = {}
+                  CMDS.keys.map(&:to_s).each { |w| approx.store(w, spellcheck(w, line).round(2).to_s) }
+                  minimum = approx.values.map(&:to_f).min
+                  if minimum < 0.6
+                    approx.each { |k, v| puts "Did you mispell #{k.cyan}?" if v.to_f == minimum }
+                  else
+                    handle_error "Command '#{line}' not found."
+                  end
+                end
               else
                 begin
                   puts args.empty? ? CMDS[command.to_sym][0]::() : CMDS[command.to_sym][0]::(args)
-                rescue ArgumentError
-                  handle_error "#{command}: No parameters found."
-                rescue NoMethodError, Errno::ENOENT, TypeError => e
+                rescue ArgumentError, Errno::ENOENT, NameError, SyntaxError => e
+                  handle_error "#{command}: #{e}"
+                rescue NoMethodError, TypeError => e
                   # fetch error message from current command
-                  handle_error "#{command}: " + CMDS[command.to_sym][1].values[1]
+                  handle_error "#{command}: #{CMDS[command.to_sym][1].values[1]}"
                 end
               end unless blank?(line)
             }.join
             # changes prompt state to the current directory
             show_prompt_git?
           end
-          $buffer << line
+          $buffer << line unless line == "<" || blank?(line)
         end
       end 
     end

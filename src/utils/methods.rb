@@ -22,3 +22,9 @@ define_method(:blank?) { |i| i.nil? || i.empty? || i[/^[\r|\t|\s]+$/m] }
 define_method(:show_prompt_git?) { has_git? || $Prompt = $dir }
 
 define_method(:handle_error) { |msg='Invalid syntax / argument.'| puts msg.red; show_prompt_git?; Core::new.main }
+
+def spellcheck(a, b)
+  longer = [a.size, b.size].max
+  same = a.each_char.zip(b.each_char).select { |a,b| a == b }.size
+  (longer - same) / a.size.to_f
+end

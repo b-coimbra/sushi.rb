@@ -8,13 +8,28 @@ CMDS = {
     :description => "moves file to another directory",
     :error => "Can't move file / invalid file name."
   ],
+  :roll    => [
+    -> { "Rolled the dice, and it came up as: #{rand(1..6).to_s.bg_blue}" },
+    :description => "rolls the dice",
+    :error => ''
+  ],
+  :~      => [
+    -> { rb_exec_mult() },
+    :description => "evaluates multiline ruby/python expressions",
+    :error => "Can't parse this expression.",
+  ],
+  :cal     => [
+    -> { cal(2, 31) },
+    :description => "shows calendar",
+    :error => "Can't show date."
+  ],
   :cat     => [
     -> (files) { cat(files) },
-    :description => "display text files",
+    :description => "display the content of any file",
     :error => "No such file in this directory."
   ],
   :<       => [
-    -> { CMDS[$buffer[-1].to_sym][0]::() unless $buffer[-1].empty? },
+    -> { CMDS[$buffer[-1].to_sym][0]::() },
     :description => "executes the last command",
     :error => "The previous command is invalid."
   ],
@@ -99,7 +114,7 @@ CMDS = {
     :error => ''
   ],
   :ls      => [
-    -> { ls },
+    -> { ls() },
     :description => "show all files on the current folder",
     :error => ''
   ],
@@ -114,12 +129,12 @@ CMDS = {
     :error => ''
   ],
   :help    => [
-    -> { help },
+    -> { help() },
     :description => "shows this help",
     :error => ''
   ],
   :screenfetch => [
-    -> { screenfetch },
+    -> { screenfetch() },
     :description => "shows system information",
     :error => "Unable to retrieve system information"
   ]
