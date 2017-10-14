@@ -1,6 +1,6 @@
-# rb-shell
+# sushi.rb
 
-![rb-shell](https://s1.postimg.org/58vzwgp8zz/rb-shell.png)
+![sushi.rb](https://s1.postimg.org/58vzwgp8zz/rb-shell.png)
 
 Custom prompt with unix features written in Ruby.
 
@@ -26,12 +26,11 @@ Inspired by [shirt](https://github.com/jstorimer/shirt)
 - [ ] Package installer (maybe through [Chocolatey](https://chocolatey.org/))
 - [x] Directory and command autocompletion with TAB
 - [x] Command history with Up Arrow
-- [ ] `screenfetch` command
 - [x] shell scripting with interactive ruby / python
 
 ### Preview
 
-![preview](https://i.imgur.com/7Wnfdg3.gif)
+![preview](https://i.imgur.com/8oA0Cna.gif)
 
 ### Contributing
 Bug fixes and pull requests are welcome.
