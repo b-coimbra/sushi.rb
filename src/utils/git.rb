@@ -6,7 +6,7 @@ def has_git?
 
   if test ?e, '.git'
     if `git rev-parse --git-dir` =~ /^\.git$/im
-      $Prompt = "git:#{`git show-branch`[/^\[.*\]/im]} #$dir"
+      $Prompt = "git:#{`git show-branch`[/^\[.*\]/im].tr('\[','(').tr('\]',')').white} #$dir"
     end
   end
 end

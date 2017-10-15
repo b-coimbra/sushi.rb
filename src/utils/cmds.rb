@@ -15,7 +15,7 @@ CMDS = {
   ],
   :~      => [
     -> { rb_exec_mult() },
-    :description => "evaluates multiline ruby/python expressions",
+    :description => "evaluates multiline ruby expressions",
     :error => "Can't parse this expression.",
   ],
   :cal     => [
@@ -54,7 +54,7 @@ CMDS = {
     :error => ''
   ],
   :cd      => [
-    -> (dir = ENV['HOME']) { Dir.chdir dir; nil },
+    -> (dir = ENV['HOME']) { Dir.chdir((dir.kind_of?(Array) ? dir*?\s : dir)); nil },
     :description => "changes directory",
     :error => "Can't access this directory."
   ],
@@ -70,11 +70,11 @@ CMDS = {
   ],
   :>       => [
     -> (*args) { rb_exec(args*?\s) },
-    :description => "evaluates ruby/python expressions",
+    :description => "evaluates inline ruby/python expressions",
     :error => "Invalid syntax."
   ],
   :echo    => [
-    -> (*str) { print str.join("\s") },
+    -> (*str) { print str*?\s },
     :description => "prints text to shell",
     :error => "Invalid characters"
   ],
@@ -104,7 +104,7 @@ CMDS = {
     :error => ''
   ],
   :cowsay  => [
-    -> (*phrase) { cowsay(phrase.join("\s").to_s) },
+    -> (*phrase) { cowsay(phrase*?\s.to_s) },
     :description => "shows an ascii cow saying whatever. eg: cowsay hehe!",
     :error => ''
   ],
