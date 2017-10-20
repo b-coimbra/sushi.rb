@@ -27,6 +27,7 @@ Inspired by [shirt](https://github.com/jstorimer/shirt)
 - [x] Directory and command autocompletion with TAB
 - [x] Command history with Up Arrow
 - [x] Spellchecking
+- [ ] pipe operator
 - [x] shell scripting with interactive ruby / python
 
 ### Preview
