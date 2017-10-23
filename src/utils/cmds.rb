@@ -24,7 +24,7 @@ CMDS = {
     :error => "Can't show date."
   ],
   :cat     => [
-    -> (files) { cat(files) },
+    -> (files) { cat(files); nil },
     :description => "display the content of any file",
     :error => "No such file in this directory."
   ],
@@ -44,7 +44,7 @@ CMDS = {
     :error => "Can't create files in this directory / invalid file name."
   ],
   :mkdir   => [
-    -> (folder = "new") { FileUtils.mkdir(folder) },
+    -> (folder = "new") { FileUtils.mkdir_p(folder) },
     :description => "creates folder",
     :error => "Can't create folders in this directory / invalid folder name."
   ],
