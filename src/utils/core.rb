@@ -7,6 +7,8 @@ require_relative 'history'
 require_relative 'autocomplete'
 require_relative 'methods'
 
+require 'timeout'
+
 # traces current directory
 trace_var :$dir, proc { |loc| $dir = "~/#{loc}".magenta }
 
@@ -50,14 +52,18 @@ class Core
               end
             else
               begin
-                # decides whether or not the command requires arguments, then execute it
-                puts args.empty? ? CMDS[command.to_sym][0]::() : CMDS[command.to_sym][0]::(args)
+                Timeout::timeout(50) {
+                  # decides whether or not the command requires arguments, then execute it
+                  puts args.empty? ? CMDS[command.to_sym][0]::() : CMDS[command.to_sym][0]::(args)
+                }
               rescue ArgumentError, Errno::ENOENT, Errno::EINVAL, SyntaxError, IOError, LoadError, StandardError => e
                 # trigger common error messages from the ruby interpreter when an exception happens
                 handle_error "#{command}: #{e}"
               rescue NoMethodError, TypeError => e
                 # fetches default error messages from the command
                 handle_error "#{command}: #{CMDS[command.to_sym][1].values[1]}"
+              rescue TimeoutError
+                handle_error "Couldn't handle this command."
               end
             end unless blank?(line)
           }.join

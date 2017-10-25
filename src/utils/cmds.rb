@@ -114,7 +114,7 @@ CMDS = {
     :error => ''
   ],
   :ls      => [
-    -> { ls() },
+    -> (*flags) { ls(flags*?\s) },
     :description => "show all files on the current folder",
     :error => ''
   ],

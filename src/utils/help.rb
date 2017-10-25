@@ -1,6 +1,6 @@
 def help
   print %{
-    sushi.rb (Simple Unix Shell in Ruby) is a custom shell with unix features written in Ruby.
+    sushi.rb (Simple Unix SHell In RuBy) is a custom shell with unix features written in Ruby.
 
     Just type any command into the terminal, or write your own, that's it!
 
