@@ -10,7 +10,7 @@ Inspired by [shirt](https://github.com/jstorimer/shirt)
 
 - Clone this repo, or download it into a directory of your choice.
 - Using the [rake gem](https://github.com/ruby/rake), type `$ rake run` to start the shell
-  - Or go into `src/` and run `$ ruby main.rb`
+  - Or either run `$ ruby src/main.rb` or `run.cmd`
 - Type `cmds` to get a full list of the commands and aliases.
 - To integrate with Cmder (or ConEmu), open the settings and go to `Startup > Tasks` and paste the location to `C:\<path-to-executable>\shell.exe`
 
@@ -26,6 +26,8 @@ Inspired by [shirt](https://github.com/jstorimer/shirt)
 - [ ] Package installer (maybe through [Chocolatey](https://chocolatey.org/))
 - [x] Directory and command autocompletion with TAB
 - [x] Command history with Up Arrow
+- [x] Spellchecking
+- [ ] pipe operator
 - [x] shell scripting with interactive ruby / python
 
 ### Preview
