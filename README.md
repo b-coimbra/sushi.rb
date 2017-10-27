@@ -32,7 +32,7 @@ Inspired by [shirt](https://github.com/jstorimer/shirt)
 
 ### Preview
 
-![preview](https://i.imgur.com/8oA0Cna.gif)
+![preview](https://i.imgur.com/iu0u7wm.gif)
 
 ### Contributing
 Bug fixes and pull requests are welcome.
