@@ -66,7 +66,7 @@ class Core
           # feed buffer for history usage
           $buffer << line unless line == "<" || blank?(line)
         end
-      end 
+      end rescue next 
     end
   end
 end

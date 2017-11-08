@@ -18,6 +18,11 @@ CMDS = {
     :description => "evaluates multiline ruby expressions",
     :error => "Can't parse this expression.",
   ],
+  :wget    => [
+    -> (args) { wget(args*?\s); nil },
+    :description => "fetches data from an URL",
+    :error => "Couldn't connect to URL."
+  ],
   :cal     => [
     -> { cal(2, 31) },
     :description => "shows calendar",
@@ -61,6 +66,12 @@ CMDS = {
   :date    => [
     -> { Time.now.strftime('%d/%m/%Y') },
     :description => "shows current date",
+    :error => ''
+  ],
+  :mult    => [
+    -> { (1..9).map { |a| (1..9).map { |b| print "%3d%s" % [(a*b), b==1 ? "|" : ""]} ;
+      puts "\n" + (a==1 ? '-'*30 : "")}; nil },
+    :description => "shows 10x10 multiplication table",
     :error => ''
   ],
   :exit    => [
