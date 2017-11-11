@@ -6,6 +6,7 @@ require_relative 'git'
 require_relative 'history'
 require_relative 'autocomplete'
 require_relative 'methods'
+require_relative 'pipeline'
 
 # traces current directory
 trace_var :$dir, proc { |loc| $dir = "~/#{loc}".magenta }
@@ -32,8 +33,11 @@ class Core
         show_prompt_git? if blank?(input)
         autocompletion()
         input.to_s.strip.split('&&').map do |line|
-          line.downcase!
           command, *args = line.split("\s")
+          command.downcase!
+          pipe_command = ->(flag=nil, pipe) {
+            print pipable("#{flag.nil? ? CMDS[command.to_sym][0]::()
+            : CMDS[command.to_sym][0]::(flag.strip)}") | eval(pipe) }
           Thread.new {
             # tries to execute the command through the native shell when not recognized
             if !CMDS.has_key?(command.to_sym)
@@ -51,7 +55,17 @@ class Core
             else
               begin
                 # decides whether or not the command requires arguments, then execute it
-                puts args.empty? ? CMDS[command.to_sym][0]::() : CMDS[command.to_sym][0]::(args)
+                if args.empty? 
+                  puts CMDS[command.to_sym][0]::()
+                # parsing pipes
+                elsif args.join("\s") =~ /\|.(.*)/im
+                  flag = $`
+                  pipes = ''
+                  args.join("\s").gsub(flag, '').split.delete_if { |x| x == "|" }.each { |pipe| pipes = ':' + pipe }
+                  (flag !~ /^|/ || CMDS[command.to_sym][0].arity <= -1) ? pipe_command.(flag, pipes) : pipe_command.(pipes)
+                else
+                  puts CMDS[command.to_sym][0]::(args)
+                end
               rescue ArgumentError, Errno::ENOENT, Errno::EINVAL, SyntaxError, IOError, LoadError, StandardError => e
                 # trigger common error messages from the ruby interpreter when an exception happens
                 handle_error "#{command}: #{e}"

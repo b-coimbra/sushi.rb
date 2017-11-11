@@ -6,6 +6,7 @@ def cat(args)
     if File.file?(content[0].to_s)
       IO.copy_stream(file, content[0].to_s)
     else
+      # > or >> flags
       File.open(file, (redirect == '>' ? 'w+' : 'a+')) { |f| f << (content*?\s) } if redirect[/>+/m]
     end
   end
