@@ -11,8 +11,11 @@ Inspired by [shirt](https://github.com/jstorimer/shirt)
 - Clone this repo, or download it into a directory of your choice.
 - Using the [rake gem](https://github.com/ruby/rake), type `$ rake run` to start the shell
   - Or either run `$ ruby src/main.rb` or `run.cmd`
-- Type `cmds` to get a full list of the commands and aliases.
+- Type `cmds` or `help` to get a full list of the commands and aliases.
 - To integrate with Cmder (or ConEmu), open the settings and go to `Startup > Tasks` and paste the location to `C:\<path-to-executable>\shell.exe`
+
+### Dependencies
+- There are no dependencies for the binaries, except having a font that supports unicode characters if you care how the prompt looks.
 
 ### Building
 
@@ -21,14 +24,14 @@ Inspired by [shirt](https://github.com/jstorimer/shirt)
 - The executable file can be found in the `bin` folder.
 
 ### To do
-- [x] Add command-line extensions (or import them from cygwin)
+- [x] Add command-line extensions (import utilities from cygwin and the native shell)
+- [ ] Integrate with Powershell
 - [x] Command stacking (eg `cd documents && ls`)
-- [ ] Package installer (maybe through [Chocolatey](https://chocolatey.org/))
-- [x] Directory and command autocompletion with TAB
+- [x] Directory and command autocompletion with TAB (see [bug](https://github.com/c0imbra/sushi.rb/issues/1))
 - [x] Command history with Up Arrow
 - [x] Spellchecking
-- [ ] pipe operator
-- [x] shell scripting with interactive ruby / python
+- [x] Pipe operator
+- [x] Shell scripting with interactive ruby / python
 
 ### Preview
 
