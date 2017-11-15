@@ -5,7 +5,7 @@ def ls(flags)
     show_info = true
     dir_size = 0
   when '-r'
-    # to do: reverse files
+    # to do
   end
 
   # adds padding and highlighting to folders / files

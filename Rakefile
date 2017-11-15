@@ -2,7 +2,7 @@ task :default => 'run'
 
 desc "Run shell"
 task :run do
-  ruby 'src/main.rb'
+  ruby 'src/sushi.rb'
 end
 
 desc "Builds executable file"
@@ -13,6 +13,12 @@ end
 
 desc "Updates the shell"
 task :update do
-  puts "Updating rb-shell..."
+  puts "Updating sushi.rb..."
   sh 'git pull origin master'
+end
+
+desc "Installs dependencies"
+task :instal do
+  puts "Installing the dependencies, if there's any.."
+  ruby './dependencies.rb'
 end

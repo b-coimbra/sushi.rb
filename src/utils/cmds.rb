@@ -15,6 +15,12 @@ CMDS = {
     :flags => "",
     :error => ''
   ],
+  :todo   => [
+    ->(args) { todo(args); nil },
+    :description => "To-do list.",
+    :flags => "[add | remove | show | clear] <text>",
+    :error => "Couldn't parse expression."
+  ],
   :~      => [
     -> { rb_exec_mult() },
     :description => "evaluates multiline ruby expressions",
@@ -152,7 +158,7 @@ CMDS = {
   :ls      => [
     -> (*flags) { ls(flags*?\s) },
     :description => "show all files on the current folder",
-    :flags => "",
+    :flags => "[-l]",
     :error => ''
   ],
   :whoami  => [
