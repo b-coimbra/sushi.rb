@@ -15,9 +15,21 @@ CMDS = {
     :flags => "",
     :error => ''
   ],
+  :msg    => [
+    -> (args) { msg(args); nil },
+    :description => "Shows a classic message box",
+    :flags => "[TEXT]",
+    :error => "Couldn't show message box."
+  ],
+  :animu  => [
+    -> { animu(); nil },
+    :description => "shows a random ascii anime character",
+    :flags => '',
+    :error => ''
+  ],
   :todo   => [
     ->(args) { todo(args); nil },
-    :description => "To-do list.",
+    :description => "to-do list",
     :flags => "[add | remove | show | clear] <text>",
     :error => "Couldn't parse expression."
   ],

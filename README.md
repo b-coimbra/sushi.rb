@@ -10,7 +10,7 @@ Inspired by [shirt](https://github.com/jstorimer/shirt)
 
 - Clone this repo, or download it into a directory of your choice.
 - Using the [rake gem](https://github.com/ruby/rake), type `$ rake run` to start the shell
-  - Or either run `$ ruby src/main.rb` or `run.cmd`
+  - Or either run `$ ruby src/sushi.rb` or `run.cmd`
 - Type `cmds` or `help` to get a full list of the commands and aliases.
 - To integrate with Cmder (or ConEmu), open the settings and go to `Startup > Tasks` and paste the location to `C:\<path-to-executable>\shell.exe`
 

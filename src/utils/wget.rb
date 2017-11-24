@@ -11,7 +11,8 @@ def wget(args)
         open(url.to_s, "User-Agent" => "Ruby/#{RUBY_VERSION}") { |f|
           response = Net::HTTP.get_response(URI.parse(url))
 
-          print "\nDownloading [%s] - %s - [%s]" % [File.basename(url), (response['content-length'].to_i.to_filesize).to_s.green, f.content_type]
+          print "\nDownloading [%s] - %s - [%s]" % \
+          [File.basename(url), (response['content-length'].to_i.to_filesize).to_s.green, f.content_type]
 
           File.open("wget/#{File.basename(URI.encode(url))}", 'wb') { |ff| ff << open(url).read }
 

@@ -1,5 +1,7 @@
-%w{ocra open-uri}.each do |lib|
-  if !`gem list -i #{lib}`
+%w{ocra ffi open-uri}.each do |lib|
+  begin
+    require lib
+  rescue LoadError
     print "The gem '#{lib}' is missing, install it? [Y/n]: "
     confirm = gets.chomp
     if confirm[/[y]/im] || blank?(confirm)
@@ -9,6 +11,5 @@
     else
       puts "Skipped dependency."
     end
-    show_prompt_git?
   end
 end

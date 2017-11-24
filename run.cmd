@@ -1,5 +1,5 @@
 @echo off
 :a
-ruby "src/main.rb"
+ruby "src/sushi.rb"
 pause
 goto a

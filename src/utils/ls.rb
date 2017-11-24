@@ -18,7 +18,7 @@ def ls(flags)
   # -l flag: calculates the total size of the folders / files
   file_size = ->(dir) {
     Dir['*'].map { |f| dir += File.size(f) }
-    print "#{("│\n│\n└── "+dir.to_filesize.to_s).green} (#{Dir['*'].length} files)"
+    print "#{("│\n│\n└── "+dir.to_filesize.to_s).cyan} (#{Dir['*'].length} files)"
   }
   file_size.(dir_size) if flags.to_s == '-l'
 end
