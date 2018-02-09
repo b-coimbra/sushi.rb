@@ -36,7 +36,7 @@ Inspired by [shirt](https://github.com/jstorimer/shirt)
 
 ### Preview
 
-![preview](https://i.imgur.com/iu0u7wm.gif)
+![preview](https://i.imgur.com/tyjkXeO.gif)
 
 ### Contributing
 Bug fixes and pull requests are welcome.
