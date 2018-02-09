@@ -8,7 +8,7 @@ end
 desc "Builds executable file"
 task :build do
   puts 'Creating executable file...'
-  sh 'ocra src --output bin/shell.exe'
+  sh 'ocra src/sushi.rb --output bin/shell.exe'
 end
 
 desc "Updates the shell"

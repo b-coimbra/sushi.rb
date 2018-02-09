@@ -9,22 +9,16 @@ CMDS = {
     :flags => "[FILE | DIR] [DIR]",
     :error => "Can't move file / invalid file name."
   ],
+  :bar    => [
+    -> (args) { bar(args*?\s) },
+    :description => "hides or shows the statusbar",
+    :flags => "[NIRCMD] [show|hide]",
+    :error => "couldn't find nircmd.exe"
+  ],
   :roll    => [
     -> { "Rolled the dice, and it came up as: #{rand(1..6).to_s.bg_blue}" },
     :description => "rolls the dice",
     :flags => "",
-    :error => ''
-  ],
-  :msg    => [
-    -> (args) { msg(args); nil },
-    :description => "Shows a classic message box",
-    :flags => "[TEXT]",
-    :error => "Couldn't show message box."
-  ],
-  :animu  => [
-    -> { animu(); nil },
-    :description => "shows a random ascii anime character",
-    :flags => '',
     :error => ''
   ],
   :todo   => [
@@ -99,13 +93,6 @@ CMDS = {
     :flags => "",
     :error => ''
   ],
-  :mult    => [
-    -> { (1..9).map { |a| (1..9).map { |b| print "%3d%s" % [(a*b), b==1 ? "|" : ""]} ;
-      puts "\n" + (a==1 ? '-'*30 : "")}; nil },
-    :description => "shows 10x10 multiplication table",
-    :flags => "",
-    :error => ''
-  ],
   :exit    => [
     -> { $> << "bye (￣▽￣)ノ"; exit 0 },
     :description => "exit shell",
@@ -170,7 +157,7 @@ CMDS = {
   :ls      => [
     -> (*flags) { ls(flags*?\s) },
     :description => "show all files on the current folder",
-    :flags => "[-l]",
+    :flags => "[-l | -la]",
     :error => ''
   ],
   :whoami  => [

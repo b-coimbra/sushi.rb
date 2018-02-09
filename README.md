@@ -2,7 +2,7 @@
 
 ![sushi.rb](https://s1.postimg.org/58vzwgp8zz/rb-shell.png)
 
-Custom prompt with unix features written in Ruby.
+sushi.rb (Simple Unix SHell In RuBy) is a custom prompt with unix-like features written in Ruby.
 
 Inspired by [shirt](https://github.com/jstorimer/shirt)
 
@@ -15,7 +15,7 @@ Inspired by [shirt](https://github.com/jstorimer/shirt)
 - To integrate with Cmder (or ConEmu), open the settings and go to `Startup > Tasks` and paste the location to `C:\<path-to-executable>\shell.exe`
 
 ### Dependencies
-- There are no dependencies for the binaries, except having a font that supports unicode characters if you care how the prompt looks.
+- There are no dependencies for the binaries, except having a patched font that supports unicode characters if you care how the prompt looks. (see [Powerline fonts](https://github.com/powerline/fonts))
 
 ### Building
 
@@ -27,11 +27,12 @@ Inspired by [shirt](https://github.com/jstorimer/shirt)
 - [x] Add command-line extensions (import utilities from cygwin and the native shell)
 - [ ] Integrate with Powershell
 - [x] Command stacking (eg `cd documents && ls`)
-- [x] Directory and command autocompletion with TAB (see [bug](https://github.com/c0imbra/sushi.rb/issues/1))
+- [x] Directory and command autocompletion with TAB
 - [x] Command history with Up Arrow
 - [x] Spellchecking
 - [x] Pipe operator
 - [x] Shell scripting with interactive ruby / python
+- [ ] Refactoring
 
 ### Preview
 

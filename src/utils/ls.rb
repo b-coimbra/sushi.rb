@@ -4,17 +4,25 @@ def ls(flags)
   when '-l'
     show_info = true
     dir_size = 0
-  when '-r'
-    # to do
   end
 
   # adds padding and highlighting to folders / files
-  Dir['*'].map { |file| puts "│ %-1s %-25s %-15s %s".cyan % [
-    ("\r├──" + " #{file}".magenta if File.directory?(file)),
-    ("\e[0m#{file}" if File.file?(file)),
-    (File.size(file).to_filesize.to_s.green if !File.directory?(file) && show_info),
-    (' │ ' + File.mtime(file).strftime("%D %H:%M") if !File.directory?(file) && show_info)] }
-
+  if flags.to_s == '-la'
+    Dir['*'].map { |file| puts "│ %-1s %-25s %-15s %s".cyan % [
+      ("\r├──" + " #{file}".magenta if File.directory?(file)),
+      ("\e[0m#{file}" if File.file?(file)),
+      (File.size(file).to_filesize.to_s.green if !File.directory?(file) && show_info),
+      (' │ ' + File.mtime(file).strftime("%D %H:%M") if !File.directory?(file) && show_info)] }
+  else
+    Dir['*'].each_slice(5).to_a.each do |file|
+      file.each do |f|
+        print "%-20s" % [
+          File.directory?(f) ? ("%-20s".red % [f]) : f
+        ]
+      end
+      puts "\n"
+    end
+  end
   # -l flag: calculates the total size of the folders / files
   file_size = ->(dir) {
     Dir['*'].map { |f| dir += File.size(f) }

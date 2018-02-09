@@ -1,4 +1,4 @@
-%w{ocra ffi open-uri}.each do |lib|
+%w{ocra open-uri readline}.each do |lib|
   begin
     require lib
   rescue LoadError

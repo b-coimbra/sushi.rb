@@ -6,5 +6,5 @@ class String
     [-> { self[/q/i] \
         ? eval(cmd)  \
         : system(cmd); nil },
-    :description => "#{"[alias]".yellow} #{des}" ]) }
+    :description => "#{"[alias = #{cmd.blue}]".yellow} #{des}" ]) }
 end

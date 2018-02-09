@@ -1,4 +1,18 @@
-# evaluates ruby/python expressions
+class String
+  define_method(:format) { |*args| self.tr('{}', '%s') % args }
+end
+
+module Kernel
+  alias_method :__init__, :initialize
+  alias_method :import, :require
+end
+
+define_method(:input) { |str| print str; gets.to_s }
+define_method(:len)   { |obj| obj.length }
+define_method(:int)   { |num| num.to_i }
+define_method(:str)   { |int| int.to_i }
+define_method(:range) { |num| (0..num) }
+
 def rb_exec(*cmds)
   cmds = cmds*?\s
   if !blank?(cmds)

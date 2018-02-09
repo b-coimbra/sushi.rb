@@ -7,5 +7,5 @@ def help
     COMMANDS AVAILABLE:\n\n}
   CMDS.collect { |key, val| puts "%-20s %s %s" % [key.to_s.cyan, val[1].values[1].to_s.yellow, val[1].values[0]] }
   puts "\nPress [ENTER] to continue...".cyan
-  Core::new.main
+  Core.main
 end
