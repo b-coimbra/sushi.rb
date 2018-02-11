@@ -1,3 +1,5 @@
+require_relative 'git'
+
 define_method(:is_windows) { !RUBY_PLATFORM[/linux|darwin|mac|solaris|bsd/im] }
 
 define_method(:connected?) { return (!!`ping 192.168.1.1`) rescue false }

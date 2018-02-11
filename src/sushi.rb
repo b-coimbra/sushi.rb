@@ -3,7 +3,7 @@
 
 require 'readline'
 
-system 'title sushi && cls'
+system "#{'title sushi' if RUBY_PLATFORM[/cygwin|mswin|mingw|bccwin|wince|emx/]} && cls"
 
 # loads all packages
 Dir[File.join(__dir__, %w[utils], '*.rb')].map(&method(:require))

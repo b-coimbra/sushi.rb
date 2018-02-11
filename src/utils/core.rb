@@ -54,7 +54,7 @@ class Core
                       if $exec_approx
                         CMDS[cmd.to_sym][0]::()
                       else
-                        puts "Did you misspell #{command.cyan}?"
+                        puts "Did you misspell #{cmd.cyan}?"
                       end
                     end
                   end
@@ -69,9 +69,12 @@ class Core
                   puts CMDS[command.to_sym][0]::()
                 # parsing pipes
                 elsif args*?\s =~ /\|.(.*)/m
+                  # fetch flags from the command
                   flag = $`
                   pipes = []
+                  # transform pipes into keys
                   args.join("\s").gsub(flag, '').split.delete_if { |x| x == "|" }.each { |pipe| pipes << (':' + pipe) }
+                  # pass pipe arguments into pipe_command handler
                   (flag !~ /^|/ || CMDS[command.to_sym][0].arity <= -1) ? pipe_command.(flag, pipes) : pipe_command.(pipes)
                 else
                   puts CMDS[command.to_sym][0]::(args)
