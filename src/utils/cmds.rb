@@ -117,12 +117,6 @@ CMDS = {
     :flags => "",
     :error => "Can't update the shell, is git installed?"
   ],
-  :run     => [
-    -> (*args) { run(args*?\s) },
-    :description => "opens website through active browser, then types something",
-    :flags => "[URL] [TEXT]",
-    :error => "Couldn't find a working browser"
-  ],
   :cmds    => [
     -> { CMDS.collect { |key, val| "%-20s %s %s" % [key.to_s.cyan, val[1].values[1].to_s.yellow,
       val[1].values[0]] }.sort_by(&:downcase) },
