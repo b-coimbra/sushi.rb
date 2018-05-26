@@ -6,7 +6,7 @@ def wget(args)
 
   FileUtils::mkdir_p 'wget' if !Dir.exists?('./wget')
   begin
-    Thread.new do 
+    Thread.new do
       urls.map do |url|
         open(url.to_s, "User-Agent" => "Ruby/#{RUBY_VERSION}") { |f|
           response = Net::HTTP.get_response(URI.parse(url))

@@ -10,7 +10,7 @@ def has_git?
 
   if test ?e, '.git'
     if `git rev-parse --git-dir` =~ /^\.git$/im
-      $Prompt = powerline_git(`git show-branch`[/^\[.*\]/im].tr('\[','').tr('\]','') + ' ')
+      $Prompt = powerline_git(`git rev-parse --abbrev-ref HEAD`.strip + ' ')
     end
   else
     $Prompt = powerline_git('', "\u{e0a2}")

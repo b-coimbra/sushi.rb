@@ -1,7 +1,7 @@
 def todo(args)
   path = File.dirname(__FILE__) + '/todo/to-do.txt'
 
-  show_todo = -> { 
+  show_todo = -> {
     File.open(path, 'r+').each_line.with_index { |line, i| puts "#{((-~i).to_s + '.').bg_red} #{line}" }
   }
 

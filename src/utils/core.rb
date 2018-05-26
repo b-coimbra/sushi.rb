@@ -54,7 +54,7 @@ class Core
                       if $exec_approx
                         CMDS[cmd.to_sym][0]::()
                       else
-                        puts "Did you misspell #{cmd.cyan}?"
+                        puts "Did you mean? #{cmd.cyan}"
                       end
                     end
                   end
