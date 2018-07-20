@@ -1,6 +1,6 @@
 # sushi.rb
 
-![sushi.rb](https://s1.postimg.org/58vzwgp8zz/rb-shell.png)
+![sushi.rb](https://i.imgur.com/ZULp4u0.png)
 
 sushi.rb (Simple Unix SHell In RuBy) is a custom prompt with unix-like features written in Ruby.
 
