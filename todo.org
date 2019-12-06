@@ -1,0 +1,31 @@
+* sushi.rb v2
+
+** TODO [0/1] Config options
+
+   - [ ] Specify which /utils/ will be executed by the OS.
+
+** TODO Store commands in the history
+
+   When a command is recognized, store it in the history.
+   Unless it begins with a space.
+
+** TODO Accept command arguments
+
+   Create a an argument parser.
+
+** DONE loader module
+
+   Should populate the environment getter with all the /utils/
+
+** TODO sushirc generator
+
+   Upon first install, make the user select where to put the config file and
+   present the default path (~/sushirc).
+
+   This module must generate default keys in the config file, such as the =$PROMPT=.
+** TODO Internal error
+
+   Some commands might need custom error messages,
+   such as =NoPermission=
+   
+   - add =error= metadata option

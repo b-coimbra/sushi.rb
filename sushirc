@@ -1,0 +1,6 @@
+# this is a comment
+# string 
+
+$PROMPT = "\W\t ->"
+
+$COLOR  = "red"
