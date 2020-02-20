@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Parses the config file and returns a hash of options
 class Config
   def initialize file
     @file = file
@@ -32,7 +35,7 @@ class Config
       end
     end
 
-    return tokens
+    tokens
   end
 
   # parse_config.each { |k, v| eval "$#{k} = '#{v}'" }

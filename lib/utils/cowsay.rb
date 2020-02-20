@@ -1,8 +1,13 @@
-def cowsay sentence
+# typed: ignore
+# frozen_string_literal: true
+
+def cowsay(*args)
+  sentence, = args
+
   print %{
-   _#{'_'*sentence.length}_
+   _#{'_' * sentence.length}_
   < #{sentence} >
-   -#{'-'*sentence.length}-
+   -#{'-' * sentence.length}-
         \\   ^__^
          \\  (oo)\\_______
             (__)\\       )/\\

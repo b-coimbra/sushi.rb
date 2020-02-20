@@ -1,31 +1,126 @@
 * sushi.rb v2
 
-** TODO [0/1] Config options
+** TODO [0/2] Config options
 
-   - [ ] Specify which /utils/ will be executed by the OS.
+   - [ ] Specify which /utils/ will be executed by the OS instead of the defined ones.
 
-** TODO Store commands in the history
+** DONE Store commands in the history
 
-   When a command is recognized, store it in the history.
-   Unless it begins with a space.
+   - [X] When a command is recognized, store it in the history.
+   - [X] Unless it begins with a space.
 
 ** TODO Accept command arguments
 
    Create a an argument parser.
 
-** DONE loader module
+** TODO Outputter
+   
+   Class for formatting output.
+   
+   output
+
+** DONE Loader module
+   CLOSED: [2019-12-16 Mon 21:06]
 
    Should populate the environment getter with all the /utils/
 
+** DONE Custom errors
+   CLOSED: [2020-01-07 Tue 17:33]
+** TODO sushirc parser
 ** TODO sushirc generator
 
    Upon first install, make the user select where to put the config file and
    present the default path (~/sushirc).
 
    This module must generate default keys in the config file, such as the =$PROMPT=.
+
+** TODO handle shell crashing
+   
+   Make the shell unable to crash.
+   Display what's happening and move on.
+
+   Except when it's a StandardError (unrecoverable error, then link to the issues page)
+
 ** TODO Internal error
 
    Some commands might need custom error messages,
    such as =NoPermission=
    
    - add =error= metadata option
+
+** TODO Detect OS
+
+   To determine if commands such as =ls= need to really be defined
+
+** TODO Special Commands
+
+   uyu infect
+   
+** TODO Sysinfo command
+
+   Command to display useful information about the system.
+
+   RAM
+   OS
+   Processor
+   Uptime
+
+   Grep =ps= or =tasklist=
+
+** TODO Themes
+
+   makizuchi, nigiri, temaki, narezuchi, temari, oshizushi,
+   sazazuchi, inarizuchi etc
+
+** TODO UYU AI
+   
+*** Create a personal "assistant"
+
+   UYU receives a command input and performs an operation based on the arguments
+
+   Display stickers to show off emotions
+   
+   Add *thinking* spinner
+
+   $ aoi define what bluewaffle is
+   $ aoi what is a dingleberry
+   $ aoi is java gay?
+   $ aoi open google and send ^youtube.com<ENTER>
+
+   AOI: system resources are depleted (RAM), run a cleanup?
+   AOI: this program: ' ' is taking 2GBs
+
+                                             •ᴗ•
+
+                                             hello.
+
+                                             ( •_•)
+
+                                             i... have no idea
+
+                                             (¬､¬)
+                                RED don't talk to me anymore RED
+
+*** Lock mode
+
+    Perceives average typing speed and is able to recognize whether the person typing is the main user or not
+
+*** Cache used responses
+
+    NEVER repeat the same phrases
+
+*** Learn as you go
+
+    store most common commands
+    scrape the internet for useful shit
+
+*** Add smalltalk command
+   
+   >_<
+   
+   it sure is nice today huh
+
+   <USER> why are you using google chrome?
+
+   pls talk to me!
+

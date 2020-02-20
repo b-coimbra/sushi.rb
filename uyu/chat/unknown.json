@@ -1,0 +1,25 @@
+{
+  "unknown": [
+    "[speed=1:i...] [speed=2:have no idea]",
+    "no idea",
+    "what's that?",
+    "dunno.",
+    "google it",
+    "humph... go ask siri instead",
+    "go ask ur mum",
+    "don't know. not an AI.",
+    "i wish i knew",
+    "sry I couln't find info about that.",
+    "look it up and tell me",
+    "not feeling up to answering it.",
+    "don't know, don't care.",
+    "how the hell would I know?",
+    "why should I know??",
+    "ur guess is as good as mine.",
+    "u tell me",
+    "ask someone else",
+    "i dont remember",
+    "wtf?"
+  ],
+  "default_face": "shrug"
+}
