@@ -2,7 +2,9 @@
 # frozen_string_literal: true
 
 def cowsay(*args)
-  sentence, = args
+  sentence, = *args
+
+  sentence = 'moooooo' if sentence.nil?
 
   print %{
    _#{'_' * sentence.length}_

@@ -33,12 +33,12 @@ class History
 
   sig { params(item: String).void }
   def store(item)
-    return if ignorespace(item) || is_clear_flag(item)
+    return if ignorespace(item) || clear_flag?(item)
 
     numbering = T.let(1, Integer)
-    numbering = (last + 1) if !last.nil?
+    numbering = (last + 1) unless last.nil?
 
-    item = T.let([numbering, item], T::Array[T.any(Integer, String)])
+    item = [numbering, item]
 
     @items << item.join(' ')
 
@@ -49,7 +49,9 @@ class History
   def clear
     @items = []
 
-    raise Error, T.cast(ErrorType::FileNotFound, String) unless File.exist? @path
+    unless File.exist? @path
+      raise Error, T.cast(ErrorType::FileNotFound, String)
+    end
 
     File.truncate(@path, 0)
   end
@@ -62,7 +64,7 @@ class History
   end
 
   sig { params(item: String).returns(T::Boolean) }
-  def is_clear_flag(item)
+  def clear_flag?(item)
     item.match?(/history\s*\-c/im)
   end
 

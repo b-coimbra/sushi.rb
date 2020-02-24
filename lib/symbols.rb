@@ -7,8 +7,21 @@ module Symbols
   ALL = constants.collect { |c| const_get(c) }
 end
 
+# Token structure
 module Token
-  Name = 'name'
-  Parameter = 'parameters'
-  Value = 'values'
+  NAME = 'name'
+  PARAMETER = 'parameters'
+  VALUE = 'values'
+
+  def self.param?(token)
+    token.start_with?('-')
+  end
+
+  def self.name?(tokens)
+    tokens.include?(Token::NAME)
+  end
+
+  def self.value?(tokens)
+    tokens.include?(Token::VALUE)
+  end
 end

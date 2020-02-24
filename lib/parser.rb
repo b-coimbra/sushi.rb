@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 require_relative 'symbols'
@@ -8,68 +9,65 @@ require_relative 'ext/string'
 
 # Parses the config file
 class Parser
+  extend T::Sig
+
   include Symbols
   include Token
 
+  CommandType = T.type_alias { T::Hash[Symbol, T.nilable(String)] }
+  TokenStream = T.type_alias { T::Array[String] }
+
+  attr_reader :commands
+
   def initialize
     @loader = Loader.new
+    @commands = []
   end
 
+  sig { params(chain: String).returns(T::Array[CommandType]) }
   def parse(chain)
-    chain    = chain.split(Symbols::AND).map(&:strip)
-    commands = []
-    tokens   = []
-
-    chain.each do |command|
+    chop(chain).each do |command|
       stream = command.split("\s")
-
-      stream.each do |value|
-
-        if command?(value)
-          tokens.push(Token::Parameter) if tokens.include?(Token::Name) # when a command is passed as parameter: eg. help ls
-          tokens.push(Token::Name)      unless tokens.include?(Token::Name)
-        end
-
-        tokens.push(Token::Parameter) if parameter?(value)
-      end
-
-      # when a command has a parameter flag, it also holds it's value
-      tokens.push(Token::Value) if tokens.include?(Token::Parameter)
-
-      commands.push(Hash[tokens.map(&:to_sym).zip(stream)])
+      tokens = tokenize(stream)
+      @commands.push(to_command(tokens, stream))
     end
 
-    raise Error, ErrorType::ParseError if commands.empty?
+    raise Error, ErrorType::ParseError if @commands.empty?
 
-    commands
+    @commands
   end
 
-  def tokenize
-    Symbols::ALL.each do |sym|
-      if command.is_a? Array
-        command.each_with_index do |c, i|
-          command[i] = separate(command[i], sym) if sym? command[i], sym
-        end
-      else
-        command = separate(command, sym) if sym? command, sym
+  sig { params(stream: TokenStream).returns(T::Array[String]) }
+  def tokenize(stream)
+    tokens = []
+
+    stream.each do |value|
+      if command?(value)
+        tokens.push(Token::PARAMETER) if     Token.name?(tokens)
+        tokens.push(Token::NAME)      unless Token.name?(tokens)
       end
+      tokens.push(Token::PARAMETER) if Token.param?(value)
     end
+
+    tokens.push(Token::VALUE) if Token.value?(tokens)
+
+    tokens
   end
 
-  def sym? expr, sym
-    p expr + sym
-    expr.match sym.to_regex
+  private
+
+  sig { params(tokens: TokenStream, stream: TokenStream).returns(CommandType) }
+  def to_command(tokens, stream)
+    Hash[tokens.map(&:to_sym).zip(stream)]
   end
 
-  def command? sym
+  sig { params(expr: String).returns(TokenStream) }
+  def chop(expr)
+    expr.split(Regexp.union(Symbols::ALL)).map(&:strip)
+  end
+
+  sig { params(sym: String).returns(T::Boolean) }
+  def command?(sym)
     @loader.in_env? sym
-  end
-
-  def parameter? sym
-    true if sym.start_with?('-')
-  end
-
-  def separate expr, sym
-    expr.split sym.to_regex
   end
 end

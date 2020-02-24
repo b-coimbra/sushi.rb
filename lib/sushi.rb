@@ -14,7 +14,7 @@ loop do
   input = gets
 
   next  if input == "\n"
-  break if input == 'q'
+  break if input == "q\n"
 
   begin
     command = Command.new(name: input)

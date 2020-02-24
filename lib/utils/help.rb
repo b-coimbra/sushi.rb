@@ -3,7 +3,7 @@
 require_relative '../help'
 
 def help(*args)
-  command, _ = *args
+  command, = *args
 
   help = Help.new
 

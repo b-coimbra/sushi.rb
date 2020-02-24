@@ -10,7 +10,7 @@ def history(*args)
   # check if it's an actual flag
   case flag
   when '-c'
-    return history.clear
+    history.clear
   when '-n'
     puts history.get value.to_i
   else

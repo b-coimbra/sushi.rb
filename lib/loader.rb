@@ -53,7 +53,6 @@ class Loader
   def populate_env
     Dir[File.join(__dir__, '/', %w[utils], '*.rb')].each do |path|
       raise Error, T.cast(ErrorType::InvalidPath, String) if path.empty?
-
       @environment.push(File.basename(path, '.rb') => path)
     end
   end

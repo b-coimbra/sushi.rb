@@ -5,6 +5,7 @@ require_relative 'loader'
 require_relative 'error'
 require_relative 'parser'
 require_relative 'history'
+require_relative 'ext/string'
 
 # Structure of a command's argument
 class Argument < T::Enum
@@ -41,10 +42,15 @@ class Command
 
   sig { params(name: String).void }
   def name=(name)
-    # fix condition, return unknown only if it does not exist at all (not even in the OS).
-    raise Error, T.cast(ErrorType::UnknownCommand, String) if name.empty?
+    return if name.blank?
 
-    @commands = @parser.parse @name
+    @commands = @parser.parse name
+
+    return unless @commands.first.empty?
+
+    raise Error, ErrorType::UnknownCommand unless sys_command? name
+
+    exec_sys(name)
   end
 
   sig { void }
@@ -54,12 +60,12 @@ class Command
     @commands.each do |command|
       @loader.load command[:name]
 
-      argument_types = T.let([], T::Array[Argument])
+      arguments = T.let([], T::Array[Argument])
 
-      argument_types << Argument::Value     unless command[:values].nil?
-      argument_types << Argument::Parameter unless command[:parameters].nil?
+      arguments << Argument::Value     unless command[:values].nil?
+      arguments << Argument::Parameter unless command[:parameters].nil?
 
-      check_args command, argument_types
+      dispatch command
     end
   end
 
@@ -67,6 +73,8 @@ class Command
 
   sig { params(command: CommandType).void }
   def dispatch(command)
+    return if command.empty?
+
     name   = command[:name]
     params = command.collect { |_, v| v }.drop(1)
 
@@ -74,24 +82,13 @@ class Command
     @history.store command.values.join(' ')
   end
 
-  sig { params(command: CommandType, argument_types: T::Array[Argument]).void }
-  def check_args(command, argument_types)
-    raise Error, ErrorType::UnknownCommand if command.empty?
+  sig { params(command: String).returns(T::Boolean) }
+  def sys_command?(command)
+    system "which #{command}", out: File::NULL
+    $?.success?
+  end
 
-    dispatch command
-
-    # if argument_types.include? ArgumentType::Value
-    # end
-
-    # if command[:parameters]
-    #   if command[:values]
-    #     dispatch T.must(command[:name]), T.must(command[:parameters]), T.must(command[:values])
-    #   else
-    #     dispatch T.must(command[:name]), T.must(command[:parameters])
-    #   end
-    # else
-    #   dispatch T.must(command[:name])
-    # end
-
+  def exec_sys(command)
+    system command
   end
 end

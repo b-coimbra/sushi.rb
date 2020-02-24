@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 def cat(*args)
-  file, _ = *args
+  file, = *args
 
   return if file.empty?
 
