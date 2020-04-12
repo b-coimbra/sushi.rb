@@ -42,10 +42,9 @@ class Parser
     tokens = []
 
     stream.each do |value|
-      if command?(value)
-        tokens.push(Token::PARAMETER) if     Token.name?(tokens)
-        tokens.push(Token::NAME)      unless Token.name?(tokens)
-      end
+      tokens.push(Token::SYS)       unless command?(value)
+      tokens.push(Token::PARAMETER) if Token.name?(tokens)
+      tokens.push(Token::NAME)      unless Token.name?(tokens) || Token.sys?(tokens)
       tokens.push(Token::PARAMETER) if Token.param?(value)
     end
 

@@ -12,6 +12,7 @@ module Token
   NAME = 'name'
   PARAMETER = 'parameters'
   VALUE = 'values'
+  SYS = 'system_command'
 
   def self.param?(token)
     token.start_with?('-')
@@ -23,5 +24,9 @@ module Token
 
   def self.value?(tokens)
     tokens.include?(Token::VALUE)
+  end
+
+  def self.sys?(tokens)
+    tokens.include?(Token::SYS)
   end
 end

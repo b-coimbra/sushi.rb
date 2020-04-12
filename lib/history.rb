@@ -38,11 +38,11 @@ class History
     numbering = T.let(1, Integer)
     numbering = (last + 1) unless last.nil?
 
-    item = [numbering, item]
+    item = [numbering, item].join(', ')
 
-    @items << item.join(' ')
+    @items << item
 
-    File.open(@path, 'a') { |f| f.puts item.inspect }
+    File.open(@path, 'a') { |f| f.puts item }
   end
 
   sig { void }
@@ -79,6 +79,6 @@ class History
 
     return nil if previous.nil?
 
-    eval(T.must(previous))[0].to_i
+    previous.split(',')[0].to_i
   end
 end

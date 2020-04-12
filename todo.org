@@ -9,73 +9,57 @@
    - [ ] Aliases
    - [ ] Prompt
 
-** DONE Store commands in the history
-
-   - [X] When a command is recognized, store it in the history.
-   - [X] Unless it begins with a space.
-
-** DONE Accept command arguments
-
-   Create a an argument parser.
-
 ** TODO Outputter
-   
+
    Some sushi.rb utilities might want to output some data to the stdout,
    we need to define a structure for that.
 
    #+begin_src ruby
-     class Format
-       def initialize message, **options
-         puts options[:error],
-              options[:warning],
-              options[:newline]
-       end
-     end
+	 class Format
+	   def initialize message, **options
+		 puts options[:error],
+			  options[:warning],
+			  options[:newline]
+	   end
+	 end
 
-     Format.new("Unknown Command", :error)
+	 Format.new("Unknown Command", :error)
    #+end_src
 
-** DONE Loader module
-   CLOSED: [2019-12-16 Mon 21:06]
-
-   Should populate the environment getter with all the /utils/.
-
-** DONE Custom errors
-   CLOSED: [2020-01-07 Tue 17:33]
 ** TODO sushirc
 *** Structure
 
-    - Variables are declared with a dollar sign ($): ~$PROMPT = "\W\t ->"~
-    - Aliases are defined with the =alias= prefix: ~alias vim = v~
-    - Comments are prefixed with a hash sign (#): ~# ignore me~
-   
+	- Variables are declared with a dollar sign ($): ~$PROMPT = "\W\t ->"~
+	- Aliases are defined with the =alias= prefix: ~alias vim = v~
+	- Comments are prefixed with a hash sign (#): ~# ignore me~
+
 *** Parser
-    
-    Read all of the config options on startup. Set the environment variables accordingly,
-    such as the prompt, aliases, and general options.
-    
-**** TODO Prompt 
-     
-     Escape characters accepted by the prompt:
 
-     | Escape character | Description               |
-     |------------------+---------------------------|
-     | \W               | current working directory |
-     | \t               | the current time HH:MM:SS |
-     | \h               | hostname                  |
-     | \s               | space                     |
-     
-**** TODO Aliases 
-     
-     Commands can be aliased with the =alias= prefix:
+	Read all of the config options on startup. Set the environment variables accordingly,
+	such as the prompt, aliases, and general options.
 
-     #+begin_src ruby
-     alias vim = v 
-     #+end_src
-     
+**** TODO Prompt
+
+	 Escape characters accepted by the prompt:
+
+	 | Escape character | Description               |
+	 |------------------+---------------------------|
+	 | \W               | current working directory |
+	 | \t               | the current time HH:MM:SS |
+	 | \h               | hostname                  |
+	 | \s               | space                     |
+
+**** TODO Aliases
+
+	 Commands can be aliased with the =alias= prefix:
+
+	 #+begin_src ruby
+	 alias vim = v
+	 #+end_src
+
 **** TODO Comments
-     
-     Comments are prefixed with the hash sign (#). Just ignore them.
+
+	 Comments are prefixed with the hash sign (#). Just ignore them.
 
 *** Generator
 
@@ -85,7 +69,7 @@
    This module must generate default keys in the config file, such as the =$PROMPT=.
 
 ** TODO Handle unknown errors
-   
+
    Make the shell unable to crash.
    Display what's happening and move on.
 
@@ -101,6 +85,11 @@
 
    To determine if commands such as =ls= need to really be defined, such as in Windows.
 
+** TODO Editing mode
+
+   Set a editing mode in the sushirc config file (emacs/vim).
+
+** TODO Execute commands on separate threads
 ** TODO [3/9] Commands
 *** TODO sysinfo
 
@@ -121,13 +110,27 @@
 *** TODO wget
 *** DONE history
 *** TODO >
-    
-    Execute inline ruby code: => puts 'hey'= 
 
+	Execute inline ruby code: => puts 'hey'=
+
+** TODO Git integration
+*** TODO Modeline integration
+
+	Show current branch and commit status (files to be staged/commited/pushed).
+
+** TODO Autocomplete
+
+   https://ruby-doc.org/stdlib-2.5.1/libdoc/readline/rdoc/Readline.html
+
+*** TODO Built-in commands autocomplete
+*** TODO Directory completion
+*** TODO External commands (git, docker etc) completion
+
+	Grep settings from =man=.
 ** TODO Themes
-   
+
    Add a color range to each theme based on the real life color representation.
-   
+
    Scheme: text | indicator | background | borders
 
    | Theme     | Scheme                          |
@@ -138,17 +141,17 @@
    | narezushi | #5e4e48 #211f1e #332520 nil     |
    | temari    | #9e7895 #4f3f69 #422e3e nil     |
    | oshizushi | #997065 #73a36c #9e9593 #d4d4d4 |
-   
+
 ** TODO UYU AI
-   
+
    =$ uyu infect=
-   
+
 *** Create a personal "assistant"
 
    UYU receives a command input and performs an operation based on the arguments
 
    Display stickers to show off emotions
-   
+
    Add *thinking* spinner
 
    $ aoi define what bluewaffle is
@@ -159,37 +162,53 @@
    AOI: system resources are depleted (RAM), run a cleanup?
    AOI: this program: ' ' is taking 2GBs
 
-                                             •ᴗ•
+											 •ᴗ•
 
-                                             hello.
+											 hello.
 
-                                             ( •_•)
+											 ( •_•)
 
-                                             i... have no idea
+											 i... have no idea
 
-                                             (¬､¬)
-                                RED don't talk to me anymore RED
+											 (¬､¬)
+								RED don't talk to me anymore RED
 
 *** Lock mode
 
-    Perceives average typing speed and is able to recognize whether the person typing is the main user or not
+	Perceives average typing speed and is able to recognize whether the person typing is the main user or not
 
 *** Cache used responses
 
-    NEVER repeat the same phrases
+	NEVER repeat the same phrases
 
 *** Learn as you go
 
-    store most common commands
-    scrape the internet for useful shit
+	store most common commands
+	scrape the internet for useful shit
 
 *** Add smalltalk command
-   
+
    >_<
-   
+
    it sure is nice today huh
 
    <USER> why are you using google chrome?
 
    pls talk to me!
 
+** DONE Store commands in the history
+
+   - [X] When a command is recognized, store it in the history.
+   - [X] Unless it begins with a space.
+
+** DONE Accept command arguments
+
+   Create a an argument parser.
+
+** DONE Loader module
+   CLOSED: [2019-12-16 Mon 21:06]
+
+   Should populate the environment getter with all the /utils/.
+
+** DONE Custom errors
+   CLOSED: [2020-01-07 Tue 17:33]

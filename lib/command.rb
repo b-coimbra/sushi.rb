@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require 'English'
+
 require_relative 'loader'
 require_relative 'error'
 require_relative 'parser'
@@ -46,11 +48,11 @@ class Command
 
     @commands = @parser.parse name
 
-    return unless @commands.first.empty?
+    return if @commands.empty?
 
-    raise Error, ErrorType::UnknownCommand unless sys_command? name
-
-    exec_sys(name)
+    @commands
+      .filter { |command| command[:system_command] }
+      .each { |c| exec_sys(c.values) }
   end
 
   sig { void }
@@ -58,6 +60,8 @@ class Command
     return if @commands.nil?
 
     @commands.each do |command|
+      next if command[:system_command]
+
       @loader.load command[:name]
 
       arguments = T.let([], T::Array[Argument])
@@ -85,10 +89,19 @@ class Command
   sig { params(command: String).returns(T::Boolean) }
   def sys_command?(command)
     system "which #{command}", out: File::NULL
-    $?.success?
+    $CHILD_STATUS.success?
   end
 
-  def exec_sys(command)
-    system command
+  sig { params(commands: T::Array[T.nilable(String)]).void }
+  def exec_sys(commands)
+    return if commands.empty?
+
+    commands.each do |command|
+      raise Error, ErrorType::UnknownCommand unless sys_command? command
+
+      system command
+
+      @history.store(command)
+    end
   end
 end
