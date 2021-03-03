@@ -19,14 +19,18 @@ module Token
   end
 
   def self.name?(tokens)
-    tokens.include?(Token::NAME)
+    !tokens.nil? && tokens.include?(Token::NAME)
   end
 
   def self.value?(tokens)
-    tokens.include?(Token::VALUE)
+    !tokens.nil? && tokens.include?(Token::VALUE)
   end
 
   def self.sys?(tokens)
-    tokens.include?(Token::SYS)
+    !tokens.nil? && tokens.include?(Token::SYS)
+  end
+
+  def self.previous(tokens, index)
+    tokens[index - 1]
   end
 end

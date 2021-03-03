@@ -9,8 +9,8 @@ require_relative 'serializer'
 class Loader
   extend T::Sig
 
-  attr_reader :environment
-  attr_reader :loaded_libs
+  attr_reader :environment,
+              :loaded_libs
 
   def initialize
     @serializer = Serializer.new
@@ -37,7 +37,7 @@ class Loader
 
     lib = @environment.select { |util| util[name] }
 
-    raise Error, T.cast(ErrorType::NoLibraries, String) if lib.empty?
+    throw(ErrorType::NoLibraries) if lib.empty?
 
     T.must(lib.first).values.collect do |path|
       require_relative path
@@ -52,7 +52,8 @@ class Loader
   sig { void }
   def populate_env
     Dir[File.join(__dir__, '/', %w[utils], '*.rb')].each do |path|
-      raise Error, T.cast(ErrorType::InvalidPath, String) if path.empty?
+      throw(ErrorType::InvalidPath) if path.empty?
+
       @environment.push(File.basename(path, '.rb') => path)
     end
   end
@@ -61,7 +62,7 @@ class Loader
   def read_util(util)
     metadata = T.must(File.read(util).split(/^__END__$/).last).strip.split("\n")
 
-    raise Error, T.cast(ErrorType::EmptyMetadata, String) if metadata.empty?
+    throw(ErrorType::EmptyMetadata) if metadata.empty?
 
     @serializer.transform(metadata)
   end

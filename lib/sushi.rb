@@ -15,7 +15,7 @@ Readline.completion_append_character = "\t"
 
 while input = Readline.readline('> ', true)
   next  if input == "\n"
-  break if input == "q\n"
+  break if input == 'q'
 
   begin
     command = Command.new(name: input)

@@ -49,9 +49,7 @@ class History
   def clear
     @items = []
 
-    unless File.exist? @path
-      raise Error, T.cast(ErrorType::FileNotFound, String)
-    end
+    throw(ErrorType::FileNotFound) unless File.exist? @path
 
     File.truncate(@path, 0)
   end

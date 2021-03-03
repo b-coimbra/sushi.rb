@@ -23,7 +23,7 @@ class Serializer < T::Struct
     begin
       result.store(:args, parameters(result[:method]))
     rescue NameError
-      raise Error, T.cast(ErrorType::ParseError, String)
+      throw(ErrorType::ParseError)
     end
 
     self.metadata = result

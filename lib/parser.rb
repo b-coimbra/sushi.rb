@@ -24,31 +24,38 @@ class Parser
     @commands = []
   end
 
+  # mv to lexer
   sig { params(chain: String).returns(T::Array[CommandType]) }
   def parse(chain)
     chop(chain).each do |command|
       stream = command.split("\s")
       tokens = tokenize(stream)
+
       @commands.push(to_command(tokens, stream))
+
+      # puts @commands
     end
 
-    raise Error, ErrorType::ParseError if @commands.empty?
+    throw(ErrorType::ParseError) if @commands.empty?
 
     @commands
   end
 
+  # mv to lexer.rb
   sig { params(stream: TokenStream).returns(T::Array[String]) }
   def tokenize(stream)
     tokens = []
 
-    stream.each do |value|
-      tokens.push(Token::SYS)       unless command?(value)
-      tokens.push(Token::PARAMETER) if Token.name?(tokens)
+    stream.each.with_index do |value, i|
+      previous_token = Token.previous(tokens, i)
+
+      tokens.push(Token::SYS)       unless command?(value) || Token.sys?(previous_token) || Token.value?(value) || Token.param?(value)
+      tokens.push(Token::VALUE)     if Token.sys?(previous_token)
       tokens.push(Token::NAME)      unless Token.name?(tokens) || Token.sys?(tokens)
       tokens.push(Token::PARAMETER) if Token.param?(value)
     end
 
-    tokens.push(Token::VALUE) if Token.value?(tokens)
+    # tokens.push(Token::VALUE) if Token.value?(tokens)
 
     tokens
   end
@@ -65,6 +72,7 @@ class Parser
     expr.split(Regexp.union(Symbols::ALL)).map(&:strip)
   end
 
+  # Determines whether a command is a known command (sushi.rb command)
   sig { params(sym: String).returns(T::Boolean) }
   def command?(sym)
     @loader.in_env? sym

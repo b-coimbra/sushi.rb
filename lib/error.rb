@@ -1,4 +1,7 @@
 # frozen_string_literal: true
+# rubocop:disable Layout/HashAlignment, Naming/ConstantName
+
+require 'singleton'
 
 module ErrorType
   FileNotFound   = 0
@@ -14,10 +17,11 @@ end
 # Custom error class
 class Error < StandardError
   include ErrorType
+  include Singleton
 
   attr_writer :message
 
-  def initialize(type = ErrorType::UnknownError)
+  def initialize(type)
     @message = {
       ErrorType::UnknownCommand => 'Command does not exist.',
       ErrorType::EmptyMetadata  => 'The util does not have any metadata defined.',
@@ -29,4 +33,8 @@ class Error < StandardError
 
     super @message
   end
+end
+
+def throw(type = ErrorType::UnknownError)
+  raise Error, type
 end
